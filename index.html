@@ -1742,7 +1742,7 @@ body::before {
         <i class="fas fa-satellite-dish"></i>
         MARKET REGIME
         <span style="font-size:9px;color:var(--text3);font-weight:400;letter-spacing:0.5px;">
-          Add NIFTY50 / NIFTY500 / NIFTYTMC rows to your CSV to activate
+          Auto-detects NSEI · NIFTY50 · NIFTY500 · NIFTYTMC · NIFTY_TOTAL_MKT from your CSV
         </span>
       </div>
       <div class="regime-overall" id="regimeOverall">
@@ -1804,7 +1804,7 @@ body::before {
         <div><span class="k">Optional:</span> Index, Sector, Open, High, Low</div>
         <div><span class="k">Format:</span> DD-MM-YYYY or YYYY-MM-DD</div>
         <div><span class="k">Min:</span> 60 rows per stock</div>
-        <div><span class="k">Regime:</span> Add NIFTY50, NIFTY500, NIFTYTMC rows</div>
+        <div><span class="k">Regime:</span> Auto-detected from NSEI / NIFTY50 / NIFTY_TOTAL_MKT rows</div>
       </div>
     </div>
 
@@ -2353,8 +2353,20 @@ let filterSector  = 'all';
 let sectorStats   = {};
 
 // v6 regime state
-let regimeData    = {};   // { 'NIFTY50': {daily,weekly,hma9,hma10,...}, ... }
-const REGIME_SYMBOLS = ['NIFTY50','NIFTY500','NIFTYTMC'];
+let regimeData    = {};   // keyed by display name
+// Recognised regime symbols — mapped to display labels
+const REGIME_SYMBOL_MAP = {
+  'NIFTY50':        'NIFTY 50',
+  'NIFTY500':       'NIFTY 500',
+  'NIFTYTMC':       'NIFTY TMC',
+  'NIFTY_TOTAL_MKT':'NIFTY TMC',
+  'NSEI':           'NIFTY 50',
+  'CRSLDX':         'NIFTY 500',
+  'NSEMIDCAP':      'NIFTY MIDCAP',
+  'NSEBANK':        'NIFTY BANK',
+  'CNXMIDCAP':      'NIFTY MIDCAP',
+};
+const REGIME_SYMBOLS = Object.keys(REGIME_SYMBOL_MAP);
 
 /* ───────────────────────────────────────────────
    TOAST
@@ -2932,9 +2944,8 @@ function buildRegimePanel() {
   overall.className = `regime-overall ${cls}`;
   overall.innerHTML = `<i class="${ico}"></i> ${txt}`;
 
-  // Individual index cards
+  // Individual index cards — keys are already display labels
   grid.innerHTML = '';
-  const LABELS = { NIFTY50:'NIFTY 50', NIFTY500:'NIFTY 500', NIFTYTMC:'NIFTY TMC' };
   keys.forEach(sym => {
     const r = regimeData[sym];
     const dCls = r.dailyTrend  === 'bull' ? 'rc-bull' : r.dailyTrend  === 'bear' ? 'rc-bear' : 'rc-neut';
@@ -2949,7 +2960,7 @@ function buildRegimePanel() {
     const card = document.createElement('div');
     card.className = 'regime-card';
     card.innerHTML = `
-      <div class="rc-name">${LABELS[sym] || sym}</div>
+      <div class="rc-name">${sym}</div>
       <div class="rc-row">
         <span class="rc-label">Daily HMA</span>
         <span class="rc-val ${dCls}">${r.dailyTrend.toUpperCase()}${r.dailyTrend==='bull'?' ▲':r.dailyTrend==='bear'?' ▼':' ~'}</span>
@@ -3156,12 +3167,19 @@ async function runProcessing() {
     .filter(sym => !REGIME_SYMBOLS.includes(sym) && uploadedParsed[sym].rows.length >= p.minDays)
     .sort();
 
-  // Extract regime data from uploaded CSV
+  // Extract regime data — recognise all mapped symbols
   regimeData = {};
   REGIME_SYMBOLS.forEach(sym => {
     if (uploadedParsed[sym] && uploadedParsed[sym].rows.length >= 20) {
       const r = calcRegime(uploadedParsed[sym].rows);
-      if (r) regimeData[sym] = r;
+      if (r) {
+        const label = REGIME_SYMBOL_MAP[sym] || sym;
+        // Keep the one with more rows if label already exists
+        if (!regimeData[label] || uploadedParsed[sym].rows.length > (regimeData[label]._rows || 0)) {
+          r._rows = uploadedParsed[sym].rows.length;
+          regimeData[label] = r;
+        }
+      }
     }
   });
   buildRegimePanel();
@@ -4115,8 +4133,9 @@ function clearAll() {
   document.getElementById('regimeOverall').innerHTML = '<i class="fas fa-circle-half-stroke"></i> NO DATA';
   document.getElementById('regimeGrid').innerHTML = `
     <div class="regime-no-data">
-      Include rows with Symbol = <strong>NIFTY50</strong>, <strong>NIFTY500</strong>,
-      or <strong>NIFTYTMC</strong> in your CSV to see regime analysis here.
+      Auto-detects regime from: <strong>NSEI</strong> (NIFTY 50), <strong>NIFTY50</strong>,
+      <strong>NIFTY_TOTAL_MKT</strong> or <strong>NIFTYTMC</strong> rows in your CSV.
+      Your CSV's NSEI rows will be used automatically.
     </div>`;
   document.getElementById('fileInput').value = '';
   const ta = document.getElementById('csvPaste');
