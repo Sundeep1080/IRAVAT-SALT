@@ -1670,46 +1670,41 @@ body::before {
     <div class="regime-note rn-caution" id="regimeNote" style="display:none"></div>
   </div>
 
-  <!-- ── CONTROL DECK ── -->
-  <div class="control-deck">
+  <!-- ── ROW 1: UPLOAD + PARAMS + BUTTONS (single tight strip) ── -->
+  <div style="display:grid;grid-template-columns:185px 1fr;gap:6px;align-items:start;">
 
-    <!-- Col 1: Upload -->
-    <div class="card">
-      <div class="card-title"><i class="fas fa-file-csv"></i> Upload CSV</div>
-      <input type="file" id="fileInput" accept=".csv,.txt"
-             onchange="handleFileSelect(this)"
-             style="display:block;width:100%;padding:5px;
-                    border:1px solid var(--border2);border-radius:var(--radius);
-                    background:var(--bg3);font-family:var(--mono);font-size:10px;
-                    color:var(--text);cursor:pointer;box-sizing:border-box;margin-bottom:5px;">
-      <textarea id="csvPaste" placeholder="Or paste CSV text here..."
-                style="width:100%;height:36px;padding:4px 6px;
-                       border:1px solid var(--border2);border-radius:var(--radius);
-                       background:var(--bg3);font-family:var(--mono);font-size:9px;
-                       color:var(--text);resize:none;box-sizing:border-box;"></textarea>
+    <!-- Upload -->
+    <div class="card" style="padding:8px 10px;">
+      <div class="card-title" style="margin-bottom:6px;"><i class="fas fa-file-csv"></i> Upload CSV</div>
+      <input type="file" id="fileInput" accept=".csv,.txt" onchange="handleFileSelect(this)"
+             style="display:block;width:100%;padding:4px;border:1px solid var(--border2);
+                    border-radius:var(--radius);background:var(--bg3);font-family:var(--mono);
+                    font-size:10px;color:var(--text);cursor:pointer;box-sizing:border-box;margin-bottom:4px;">
+      <textarea id="csvPaste" placeholder="Or paste CSV here..."
+                style="width:100%;height:32px;padding:3px 5px;border:1px solid var(--border2);
+                       border-radius:var(--radius);background:var(--bg3);font-family:var(--mono);
+                       font-size:9px;color:var(--text);resize:none;box-sizing:border-box;"></textarea>
       <button onclick="loadFromPaste()"
-              style="width:100%;margin-top:3px;padding:4px;
-                     background:var(--amber);color:#000;border:none;
-                     border-radius:var(--radius);font-family:var(--mono);
+              style="width:100%;margin-top:3px;padding:4px;background:var(--amber);color:#000;
+                     border:none;border-radius:var(--radius);font-family:var(--mono);
                      font-size:10px;font-weight:700;cursor:pointer;">
         <i class="fas fa-paste"></i> Load Pasted CSV
       </button>
       <div id="fileStatus" style="font-family:var(--mono);font-size:9px;color:var(--text3);
-                  margin-top:4px;text-align:center;min-height:12px;"></div>
-      <details style="margin-top:3px;">
-        <summary style="font-family:var(--mono);font-size:9px;color:var(--text3);cursor:pointer;">Format help</summary>
+                  margin-top:3px;text-align:center;min-height:12px;line-height:1.3;"></div>
+      <details style="margin-top:2px;">
+        <summary style="font-family:var(--mono);font-size:9px;color:var(--text3);cursor:pointer;">▸ Format</summary>
         <div class="format-box" style="margin-top:3px;">
-          <div><span class="k">Required:</span> <span class="v">Date, Symbol, Close</span></div>
-          <div><span class="k">Optional:</span> Index, Sector, Open, High, Low</div>
-          <div><span class="k">Format:</span> YYYY-MM-DD or DD-MM-YYYY</div>
-          <div><span class="k">Regime:</span> Include NSEI / CRSLDX rows</div>
+          <div><span class="k">Req:</span> <span class="v">Date, Symbol, Close</span></div>
+          <div><span class="k">Opt:</span> Index, Sector, O/H/L</div>
+          <div><span class="k">Regime:</span> Include NSEI/CRSLDX</div>
         </div>
       </details>
     </div>
 
-    <!-- Col 2: Params + Buttons -->
-    <div class="card" style="min-width:0;">
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:5px;">
+    <!-- Params + Buttons (all on one card) -->
+    <div class="card" style="padding:8px 10px;">
+      <div style="display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-bottom:6px;">
         <div class="param-item">
           <label>Min Days</label>
           <input type="number" id="p_minDays" value="60" min="20" max="365">
@@ -1759,123 +1754,126 @@ body::before {
       <select id="p_sortBy" style="display:none"><option value="symbol">Symbol</option></select>
       <div class="btn-row">
         <button class="btn btn-primary" id="runBtn" disabled>
-          <i class="fas fa-bolt"></i> Generate
+          <i class="fas fa-bolt"></i> Generate Signals
         </button>
         <button class="btn btn-ghost" id="clearBtn">
           <i class="fas fa-trash-alt"></i> Clear
         </button>
         <button class="btn btn-export" id="exportBtn" style="display:none">
-          <i class="fas fa-download"></i> Export
+          <i class="fas fa-download"></i> Export CSV
         </button>
         <button class="btn btn-sample" id="sampleBtn">
           <i class="fas fa-vial"></i> Sample
         </button>
       </div>
     </div>
+  </div>
 
-    <!-- Col 3: Breadth Meter + ADV:DEC:NEUTRAL stacked -->
-    <div style="display:flex;flex-direction:column;gap:6px;">
+  <!-- ── ROW 2: BREADTH + ADV/DEC — full width, side by side ── -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
 
-      <!-- TRIGGER BREADTH -->
-      <div id="breadthPanel" style="display:none;background:var(--bg2);border:1px solid var(--border);
-           border-radius:var(--radius);padding:10px 12px;box-shadow:var(--shadow-sm);">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <span style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text);letter-spacing:0.5px;">
-            <i class="fas fa-gauge-high" style="color:var(--amber);margin-right:5px;"></i>TRIGGER BREADTH
-          </span>
-          <span id="breadthDate" style="font-family:var(--mono);font-size:10px;color:var(--text3);"></span>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px;">
-          <div style="position:relative;width:70px;height:70px;flex-shrink:0;">
-            <svg viewBox="0 0 110 110" style="width:70px;height:70px;">
-              <circle class="dial-track" cx="55" cy="55" r="42" stroke-dasharray="263.9" stroke-dashoffset="0"/>
-              <circle class="dial-fill" id="dialFill" cx="55" cy="55" r="42"
-                      stroke-dasharray="263.9" stroke-dashoffset="263.9" stroke="#9ca3af"/>
-            </svg>
-            <div class="dial-text-val">
-              <span id="dialScore" style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--wait);line-height:1;">—</span>
-              <span style="font-family:var(--mono);font-size:8px;color:var(--text3);letter-spacing:1px;">SCORE</span>
-            </div>
-          </div>
-          <div style="flex:1;">
-            <div id="breadthGrade" style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;">NO DATA</div>
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-              <span style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--bull);width:30px;">BUY</span>
-              <div style="flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;">
-                <div id="bsBuyFill" style="height:100%;background:var(--bull);border-radius:4px;width:0%;transition:width 0.5s;"></div>
-              </div>
-              <span id="bsBuyCount" style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--bull);width:38px;text-align:right;">0</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:6px;">
-              <span style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--bear);width:30px;">SELL</span>
-              <div style="flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;">
-                <div id="bsSellFill" style="height:100%;background:var(--bear);border-radius:4px;width:0%;transition:width 0.5s;"></div>
-              </div>
-              <span id="bsSellCount" style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--bear);width:38px;text-align:right;">0</span>
-            </div>
-            <div style="font-family:var(--mono);font-size:11px;color:var(--text2);margin-top:5px;">
-              B:S = <span id="bsRatio" style="color:var(--amber);font-weight:700;">—</span>
-            </div>
+    <!-- TRIGGER BREADTH — left half -->
+    <div id="breadthPanel" style="display:none;background:var(--bg2);border:1px solid var(--border);
+         border-radius:var(--radius);padding:12px 16px;box-shadow:var(--shadow-sm);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <span style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--text);letter-spacing:0.5px;">
+          <i class="fas fa-gauge-high" style="color:var(--amber);margin-right:6px;"></i>TRIGGER BREADTH METER
+        </span>
+        <span id="breadthDate" style="font-family:var(--mono);font-size:10px;color:var(--text3);"></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:20px;">
+        <!-- Dial -->
+        <div style="position:relative;width:80px;height:80px;flex-shrink:0;">
+          <svg viewBox="0 0 110 110" style="width:80px;height:80px;">
+            <circle class="dial-track" cx="55" cy="55" r="42" stroke-dasharray="263.9" stroke-dashoffset="0"/>
+            <circle class="dial-fill" id="dialFill" cx="55" cy="55" r="42"
+                    stroke-dasharray="263.9" stroke-dashoffset="263.9" stroke="#9ca3af"/>
+          </svg>
+          <div class="dial-text-val">
+            <span id="dialScore" style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--wait);line-height:1;">—</span>
+            <span style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:1px;">SCORE</span>
           </div>
         </div>
-        <div id="breadthVerdict" style="margin-top:6px;"></div>
-        <div id="breadthSizeRec" style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text);margin-top:2px;"></div>
-        <div id="breadthAdvice" style="font-family:var(--mono);font-size:10px;color:var(--text2);margin-top:3px;line-height:1.5;"></div>
-        <div id="hotSectors" style="margin-top:5px;display:flex;flex-wrap:wrap;gap:3px;">
-          <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">—</span>
+        <!-- Stats -->
+        <div style="flex:1;">
+          <div id="breadthGrade" style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;">NO DATA</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+            <span style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--bull);width:34px;">BUY</span>
+            <div style="flex:1;height:10px;background:var(--bg3);border-radius:5px;overflow:hidden;">
+              <div id="bsBuyFill" style="height:100%;background:var(--bull);border-radius:5px;width:0%;transition:width 0.5s;"></div>
+            </div>
+            <span id="bsBuyCount" style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--bull);min-width:50px;text-align:right;">0</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <span style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--bear);width:34px;">SELL</span>
+            <div style="flex:1;height:10px;background:var(--bg3);border-radius:5px;overflow:hidden;">
+              <div id="bsSellFill" style="height:100%;background:var(--bear);border-radius:5px;width:0%;transition:width 0.5s;"></div>
+            </div>
+            <span id="bsSellCount" style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--bear);min-width:50px;text-align:right;">0</span>
+          </div>
+          <div style="font-family:var(--mono);font-size:12px;color:var(--text2);">
+            BUY:SELL = <span id="bsRatio" style="color:var(--amber);font-weight:700;font-size:14px;">—</span>
+          </div>
+        </div>
+        <!-- Verdict -->
+        <div style="min-width:180px;">
+          <div id="breadthVerdict" style="margin-bottom:4px;"></div>
+          <div id="breadthSizeRec" style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px;"></div>
+          <div id="breadthAdvice" style="font-family:var(--mono);font-size:11px;color:var(--text2);line-height:1.5;"></div>
+          <div id="hotSectors" style="margin-top:6px;display:flex;flex-wrap:wrap;gap:3px;"></div>
         </div>
       </div>
+    </div>
 
-      <!-- ADV : DEC : NEUTRAL -->
-      <div id="advDecPanel" style="display:none;background:var(--bg2);border:1px solid var(--border);
-           border-radius:var(--radius);padding:10px 12px;box-shadow:var(--shadow-sm);">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <span style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text);letter-spacing:0.5px;">
-            <i class="fas fa-chart-bar" style="color:var(--amber);margin-right:5px;"></i>ADV · DEC · NEUTRAL
-          </span>
-          <div style="display:flex;align-items:center;gap:5px;cursor:pointer;" onclick="toggleAdvDecMode()">
-            <div class="adc-toggle" id="advToggle"><div class="adc-toggle-knob"></div></div>
-            <span id="advDecModeBadge" style="font-family:var(--mono);font-size:10px;color:var(--amber);font-weight:700;">ALL</span>
-          </div>
-        </div>
-        <!-- 3 big numbers -->
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;
-                    border:1px solid var(--border);border-radius:var(--radius);
-                    overflow:hidden;margin-bottom:8px;">
-          <div style="text-align:center;padding:8px 4px;border-right:1px solid var(--border);background:rgba(5,150,105,0.05);">
-            <div id="advCount" style="font-family:var(--mono);font-size:24px;font-weight:700;color:var(--bull);line-height:1;">0</div>
-            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:2px;">▲ BUY</div>
-            <div id="advPct" style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--bull);margin-top:1px;">0%</div>
-          </div>
-          <div style="text-align:center;padding:8px 4px;border-right:1px solid var(--border);background:rgba(220,38,38,0.05);">
-            <div id="decCount" style="font-family:var(--mono);font-size:24px;font-weight:700;color:var(--bear);line-height:1;">0</div>
-            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:2px;">▼ SELL</div>
-            <div id="decPct" style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--bear);margin-top:1px;">0%</div>
-          </div>
-          <div style="text-align:center;padding:8px 4px;background:rgba(107,114,128,0.05);">
-            <div id="neutCount" style="font-family:var(--mono);font-size:24px;font-weight:700;color:var(--wait);line-height:1;">0</div>
-            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:2px;">— NEUT</div>
-            <div id="neutPct" style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--wait);margin-top:1px;">0%</div>
-          </div>
-        </div>
-        <!-- 3-segment colour bar -->
-        <div style="height:7px;border-radius:4px;overflow:hidden;display:flex;margin-bottom:8px;background:var(--bg3);">
-          <div id="advBarFill" style="height:100%;background:var(--bull);transition:width 0.5s;width:0%;border-radius:4px 0 0 4px;"></div>
-          <div id="decBarFill" style="height:100%;background:var(--bear);transition:width 0.5s;width:0%;"></div>
-          <div id="neutBarFill" style="height:100%;background:#9ca3af;opacity:0.4;flex:1;border-radius:0 4px 4px 0;"></div>
-        </div>
-        <!-- Ratio + sentiment -->
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <div style="font-family:var(--mono);">
-            <span style="font-size:10px;color:var(--text3);">Ratio </span>
-            <span id="ratioScore" style="font-size:16px;font-weight:700;" class="adc-ratio-val neutral">—</span>
-          </div>
-          <span id="marketSentiment" class="adc-sentiment neutral" style="font-size:11px;padding:3px 10px;">NO DATA</span>
+    <!-- ADV · DEC · NEUTRAL — right half -->
+    <div id="advDecPanel" style="display:none;background:var(--bg2);border:1px solid var(--border);
+         border-radius:var(--radius);padding:12px 16px;box-shadow:var(--shadow-sm);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <span style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--text);letter-spacing:0.5px;">
+          <i class="fas fa-chart-bar" style="color:var(--amber);margin-right:6px;"></i>ADV · DEC · NEUTRAL
+        </span>
+        <div style="display:flex;align-items:center;gap:6px;cursor:pointer;" onclick="toggleAdvDecMode()">
+          <div class="adc-toggle" id="advToggle"><div class="adc-toggle-knob"></div></div>
+          <span id="advDecModeBadge" style="font-family:var(--mono);font-size:10px;color:var(--amber);font-weight:700;">ALL</span>
         </div>
       </div>
+      <!-- 3 big numbers -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;
+                  border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:10px;">
+        <div style="text-align:center;padding:12px 8px;border-right:1px solid var(--border);background:rgba(5,150,105,0.05);">
+          <div id="advCount" style="font-family:var(--mono);font-size:32px;font-weight:700;color:var(--bull);line-height:1;">0</div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-top:3px;">▲ ADVANCING</div>
+          <div id="advPct" style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--bull);margin-top:2px;">0%</div>
+        </div>
+        <div style="text-align:center;padding:12px 8px;border-right:1px solid var(--border);background:rgba(220,38,38,0.05);">
+          <div id="decCount" style="font-family:var(--mono);font-size:32px;font-weight:700;color:var(--bear);line-height:1;">0</div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-top:3px;">▼ DECLINING</div>
+          <div id="decPct" style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--bear);margin-top:2px;">0%</div>
+        </div>
+        <div style="text-align:center;padding:12px 8px;background:rgba(107,114,128,0.05);">
+          <div id="neutCount" style="font-family:var(--mono);font-size:32px;font-weight:700;color:var(--wait);line-height:1;">0</div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-top:3px;">— NEUTRAL</div>
+          <div id="neutPct" style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--wait);margin-top:2px;">0%</div>
+        </div>
+      </div>
+      <!-- 3-segment bar -->
+      <div style="height:8px;border-radius:4px;overflow:hidden;display:flex;margin-bottom:10px;background:var(--bg3);">
+        <div id="advBarFill" style="height:100%;background:var(--bull);transition:width 0.5s;width:0%;"></div>
+        <div id="decBarFill" style="height:100%;background:var(--bear);transition:width 0.5s;width:0%;"></div>
+        <div id="neutBarFill" style="height:100%;background:#9ca3af;opacity:0.4;flex:1;"></div>
+      </div>
+      <!-- Ratio + sentiment row -->
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-family:var(--mono);">
+          <span style="font-size:11px;color:var(--text3);">ADV:DEC Ratio </span>
+          <span id="ratioScore" style="font-size:20px;font-weight:700;" class="adc-ratio-val neutral">—</span>
+        </div>
+        <span id="marketSentiment" class="adc-sentiment neutral"
+              style="font-size:13px;padding:5px 16px;font-weight:700;">NO DATA</span>
+      </div>
+    </div>
 
-    </div><!-- end col 3 -->
-  </div><!-- end control-deck -->
+  </div><!-- end row 2 -->
 
   <!-- ── STATS ── -->
   <div class="stats-bar" id="statsBar">
