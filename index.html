@@ -78,10 +78,10 @@ body::before {
 .shell {
   max-width: 1900px;
   margin: 0 auto;
-  padding: 16px 20px;
+  padding: 8px 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
   position: relative;
   z-index: 1;
 }
@@ -94,14 +94,14 @@ body::before {
   border: 1px solid var(--border);
   border-top: 3px solid var(--amber);
   border-radius: var(--radius-lg);
-  padding: 14px 24px;
+  padding: 8px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
 }
 .masthead::after {
   content: '';
@@ -115,48 +115,48 @@ body::before {
 .brand {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
 }
 .brand-icon {
-  width: 42px; height: 42px;
+  width: 32px; height: 32px;
   background: linear-gradient(135deg, var(--amber) 0%, #d97706 100%);
-  border-radius: 8px;
+  border-radius: 6px;
   display: grid; place-items: center;
   font-family: var(--mono);
   font-weight: 700;
-  font-size: 13px;
+  font-size: 11px;
   color: #000;
   letter-spacing: -0.5px;
   flex-shrink: 0;
 }
 .brand-text h1 {
   font-family: var(--mono);
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--bright);
-  letter-spacing: 3px;
+  letter-spacing: 2px;
 }
 .brand-text p {
-  font-size: 10px;
+  font-size: 9px;
   color: var(--text2);
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
   text-transform: uppercase;
-  margin-top: 2px;
+  margin-top: 1px;
   font-family: var(--mono);
 }
 
 .masthead-pills {
   display: flex;
-  gap: 8px;
+  gap: 5px;
   flex-wrap: wrap;
 }
 .pill {
-  padding: 4px 10px;
-  border-radius: 4px;
+  padding: 2px 7px;
+  border-radius: 3px;
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
 }
 .pill-amber { background: rgba(217,119,6,0.09); color: var(--amber); border: 1px solid rgba(217,119,6,0.22); }
@@ -168,86 +168,91 @@ body::before {
 ═══════════════════════════════════════════════════════ */
 .control-deck {
   display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 12px;
+  grid-template-columns: 185px 1fr 300px;
+  gap: 6px;
   align-items: start;
 }
 
 .card {
   background: var(--bg2);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 16px;
+  border-radius: var(--radius);
+  padding: 10px 12px;
   box-shadow: var(--shadow-sm);
 }
 .card-title {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
   color: var(--text2);
   letter-spacing: 2px;
   text-transform: uppercase;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 .card-title i { color: var(--amber); }
 
 /* Upload zone */
 .drop-zone {
-  border: 2px dashed var(--border2);
+  border: 1px dashed var(--border2);
   border-radius: var(--radius);
-  padding: 22px 14px;
+  padding: 8px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.25s;
+  transition: all 0.2s;
   background: rgba(245,158,11,0.02);
+  display: none;  /* hidden — file input is sufficient */
 }
-.drop-zone:hover, .drop-zone.drag-active {
+.drop-zone.drag-active {
   border-color: var(--amber);
   background: rgba(245,158,11,0.05);
+  display: block;
 }
-.drop-zone i { font-size: 26px; color: var(--amber); opacity: 0.7; margin-bottom: 8px; display: block; }
-.drop-zone h3 { font-size: 13px; color: var(--bright); margin-bottom: 4px; }
-.drop-zone p  { font-size: 11px; color: var(--text2); }
+.drop-zone i { font-size: 18px; color: var(--amber); opacity: 0.7; margin-bottom: 4px; display: block; }
+.drop-zone h3 { font-size: 11px; color: var(--bright); margin-bottom: 2px; }
+.drop-zone p  { font-size: 10px; color: var(--text2); }
 
 .format-box {
-  margin-top: 12px;
+  margin-top: 6px;
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 10px 12px;
+  padding: 5px 8px;
   font-family: var(--mono);
-  font-size: 10px;
-  color: var(--text2);
-  line-height: 2;
+  font-size: 9px;
+  color: var(--text3);
+  line-height: 1.7;
 }
 .format-box .k { color: var(--amber); font-weight: 600; }
 .format-box .v { color: var(--bull); }
 
-/* Parameter grid */
+/* Parameter grid — 5 columns tight */
 .param-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-bottom: 12px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+  margin-bottom: 6px;
 }
 .param-item {
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 8px 10px;
+  padding: 4px 6px;
 }
 .param-item label {
   display: block;
   font-family: var(--mono);
   font-size: 9px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text2);
-  letter-spacing: 1.5px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
-  margin-bottom: 5px;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .param-item input, .param-item select {
   width: 100%;
@@ -255,106 +260,94 @@ body::before {
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--bright);
-  padding: 5px 7px;
+  padding: 3px 5px;
   font-family: var(--mono);
   font-size: 12px;
+  font-weight: 600;
   outline: none;
   transition: border 0.2s;
+  box-sizing: border-box;
 }
 .param-item input:focus, .param-item select:focus { border-color: var(--amber); }
 .param-item select option { background: var(--bg2); }
 
 /* Buttons */
-.btn-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.btn-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 .btn {
-  padding: 9px 16px;
+  padding: 6px 12px;
   border: none;
   border-radius: var(--radius);
   font-family: var(--sans);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 5px;
   transition: all 0.2s;
   white-space: nowrap;
 }
 .btn:disabled { opacity: 0.4; pointer-events: none; }
-.btn-primary {
-  background: var(--amber);
-  color: #000;
-}
-.btn-primary:hover { background: #fbbf24; transform: translateY(-1px); }
-.btn-ghost {
-  background: var(--bg3);
-  color: var(--text);
-  border: 1px solid var(--border2);
-}
-.btn-ghost:hover { border-color: var(--text2); color: var(--bright); background: var(--border); }
-.btn-export {
-  background: var(--bull-g);
-  color: var(--bull);
-  border: 1px solid rgba(16,185,129,0.3);
-}
+.btn-primary  { background: var(--amber); color: #000; }
+.btn-primary:hover { background: #fbbf24; }
+.btn-ghost    { background: var(--bg3); color: var(--text); border: 1px solid var(--border2); }
+.btn-ghost:hover { border-color: var(--text2); color: var(--bright); }
+.btn-export   { background: var(--bull-g); color: var(--bull); border: 1px solid rgba(16,185,129,0.3); }
 .btn-export:hover { background: rgba(16,185,129,0.15); }
-.btn-sample {
-  background: var(--bg3);
-  color: var(--text2);
-  border: 1px solid var(--border);
-  font-size: 11px;
-}
-.btn-sample:hover { color: var(--text); border-color: var(--border2); background: var(--border); }
+.btn-sample   { background: var(--bg3); color: var(--text2); border: 1px solid var(--border); font-size: 10px; }
 
 /* ═══════════════════════════════════════════════════════
-   STATS BAR
+   STATS BAR — compact inline strip
 ═══════════════════════════════════════════════════════ */
 .stats-bar {
   display: none;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 8px;
-}
-.stats-bar.visible { display: grid; }
-
-.stat {
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 10px 14px;
+  padding: 6px 12px;
+  align-items: center;
+  gap: 0;
+  box-shadow: var(--shadow-sm);
+}
+.stats-bar.visible { display: flex; }
+
+.stat {
   display: flex;
   align-items: center;
-  gap: 10px;
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.2s, transform 0.2s;
+  gap: 6px;
+  padding: 2px 12px;
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
 }
-.stat:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.stat:last-child { border-right: none; }
+.stat:hover { background: transparent; transform: none; box-shadow: none; }
 .stat-ico {
-  width: 32px; height: 32px;
-  border-radius: 6px;
+  width: 22px; height: 22px;
+  border-radius: 4px;
   display: grid; place-items: center;
-  font-size: 14px;
+  font-size: 11px;
   flex-shrink: 0;
 }
 .stat-ico.a { background: rgba(217,119,6,0.10); color: var(--amber); }
 .stat-ico.g { background: rgba(5,150,105,0.10); color: var(--bull); }
 .stat-ico.r { background: rgba(220,38,38,0.10); color: var(--bear); }
 .stat-ico.o { background: rgba(234,88,12,0.10); color: var(--exit); }
-.stat-ico.d { background: rgba(45,53,80,0.07); color: var(--wait); }
+.stat-ico.d { background: rgba(45,53,80,0.07);  color: var(--wait); }
 
 .stat-body label {
   display: block;
-  font-size: 9px;
-  color: var(--text2);
+  font-size: 8px;
+  color: var(--text3);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   font-family: var(--mono);
 }
 .stat-body strong {
   font-family: var(--mono);
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--bright);
-  line-height: 1.2;
+  line-height: 1.1;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -365,7 +358,7 @@ body::before {
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 12px 16px;
+  padding: 7px 12px;
   box-shadow: var(--shadow-sm);
 }
 .progress-bar-wrap.visible { display: block; }
@@ -373,13 +366,13 @@ body::before {
   display: flex;
   justify-content: space-between;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text2);
-  margin-bottom: 8px;
+  margin-bottom: 5px;
 }
 .prog-header span:last-child { color: var(--amber); }
 .prog-track {
-  height: 4px;
+  height: 3px;
   background: var(--bg3);
   border-radius: 2px;
   overflow: hidden;
@@ -392,22 +385,20 @@ body::before {
   transition: width 0.3s ease;
 }
 
-/* ═══════════════════════════════════════════════════════
-   SIGNAL SUMMARY PILLS
-═══════════════════════════════════════════════════════ */
+/* Signal summary pills — compact */
 .summary-row {
   display: none;
-  gap: 8px;
+  gap: 5px;
   flex-wrap: wrap;
   align-items: center;
 }
 .summary-row.visible { display: flex; }
 
 .sum-pill {
-  padding: 5px 14px;
+  padding: 3px 10px;
   border-radius: 20px;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
@@ -418,8 +409,8 @@ body::before {
 .sum-pill.exit  { background: var(--exit-g);  color: var(--exit);  border: 1px solid rgba(249,115,22,0.3); }
 .sum-pill.neut  { background: rgba(45,53,80,0.06); color: var(--text2); border: 1px solid var(--border); }
 .sum-pill.all   { background: rgba(217,119,6,0.07); color: var(--amber); border: 1px solid rgba(217,119,6,0.2); }
-.sum-pill:hover { filter: brightness(1.2); }
-.sum-pill.active { outline: 2px solid currentColor; outline-offset: 2px; }
+.sum-pill:hover { filter: brightness(1.1); }
+.sum-pill.active { outline: 2px solid currentColor; outline-offset: 1px; }
 
 /* ═══════════════════════════════════════════════════════
    FILTER BAR
@@ -429,8 +420,8 @@ body::before {
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 10px 14px;
-  gap: 12px;
+  padding: 6px 10px;
+  gap: 8px;
   align-items: center;
   flex-wrap: wrap;
   box-shadow: var(--shadow-sm);
@@ -440,15 +431,15 @@ body::before {
 .flt-grp {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 5px;
 }
 .flt-grp label {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
-  color: var(--text2);
+  color: var(--text3);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   white-space: nowrap;
 }
 .flt-grp select {
@@ -456,10 +447,10 @@ body::before {
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--text);
-  padding: 6px 9px;
+  padding: 4px 7px;
   font-family: var(--mono);
-  font-size: 11px;
-  min-width: 130px;
+  font-size: 10px;
+  min-width: 110px;
   cursor: pointer;
   outline: none;
   transition: border 0.2s;
@@ -470,14 +461,171 @@ body::before {
 .flt-count {
   margin-left: auto;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text2);
 }
 .flt-count strong { color: var(--amber); }
 
 /* ═══════════════════════════════════════════════════════
-   TABLE
+   COLLAPSIBLE PANELS
 ═══════════════════════════════════════════════════════ */
+.collapsible-panel {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.collapsible-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.collapsible-header:hover { background: var(--bg3); }
+.collapsible-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.collapsible-title i { color: var(--amber); font-size: 11px; }
+.collapsible-summary {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.collapsible-chevron {
+  font-size: 10px;
+  color: var(--text3);
+  transition: transform 0.2s;
+  margin-left: 8px;
+}
+.collapsible-panel.open .collapsible-chevron { transform: rotate(180deg); }
+.collapsible-body {
+  display: none;
+  padding: 0 12px 10px;
+  border-top: 1px solid var(--border);
+}
+.collapsible-panel.open .collapsible-body { display: block; }
+
+/* ── Compact ADV/DEC inline ── */
+.adv-dec-panel {
+  display: none;
+}
+.adv-dec-panel.visible { display: block; }
+
+.adv-dec-compact {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+}
+.adc-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-right: 10px;
+  white-space: nowrap;
+}
+.adc-num {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-right: 1px solid var(--border);
+}
+.adc-num:last-of-type { border-right: none; }
+.adc-val {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+}
+.adc-sub {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--text3);
+  line-height: 1.3;
+}
+.adc-ratio {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 10px;
+  border-left: 1px solid var(--border);
+}
+.adc-ratio-val {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+}
+.adc-ratio-val.bullish { color: var(--bull); }
+.adc-ratio-val.bearish { color: var(--bear); }
+.adc-ratio-val.neutral { color: var(--wait); }
+.adc-sentiment {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+.adc-sentiment.bullish { background: var(--bull-g); color: var(--bull); border: 1px solid rgba(5,150,105,0.25); }
+.adc-sentiment.bearish { background: var(--bear-g); color: var(--bear); border: 1px solid rgba(220,38,38,0.25); }
+.adc-sentiment.neutral { background: rgba(107,114,128,0.07); color: var(--wait); border: 1px solid var(--border); }
+.adc-bar-mini {
+  width: 80px; height: 4px;
+  background: var(--bg3);
+  border-radius: 2px;
+  overflow: hidden;
+  display: flex;
+}
+.adc-bar-bull { height: 100%; background: var(--bull); border-radius: 2px 0 0 2px; transition: width 0.5s; }
+.adc-bar-bear { height: 100%; background: var(--bear); border-radius: 0 2px 2px 0; transition: width 0.5s; }
+.adc-toggle-wrap {
+  display: flex; align-items: center; gap: 5px; cursor: pointer;
+  font-family: var(--mono); font-size: 9px; color: var(--text3);
+}
+.adc-toggle {
+  width: 28px; height: 14px;
+  background: rgba(217,119,6,0.15);
+  border: 1px solid rgba(217,119,6,0.3);
+  border-radius: 7px; position: relative; cursor: pointer;
+  transition: background 0.2s;
+}
+.adc-toggle.active { background: rgba(99,102,241,0.15); border-color: rgba(99,102,241,0.35); }
+.adc-toggle-knob {
+  position: absolute; top: 1px; left: 1px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--amber);
+  transition: left 0.2s, background 0.2s;
+}
+.adc-toggle.active .adc-toggle-knob { left: 15px; background: #6366f1; }
+
+/* Capital input compact */
+
+
+
 .table-wrapper {
   background: var(--bg2);
   border: 1px solid var(--border);
@@ -487,7 +635,7 @@ body::before {
 }
 
 .table-scroll {
-  max-height: 640px;
+  max-height: 75vh;
   overflow-y: auto;
   overflow-x: auto;
 }
@@ -837,118 +985,30 @@ body::before {
 /* ═══════════════════════════════════════════════════════
    ADV : DEC RATIO PANEL
 ═══════════════════════════════════════════════════════ */
-.adv-dec-panel {
-  display: none;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 20px 24px;
-  box-shadow: var(--shadow-md);
-  position: relative;
-  overflow: hidden;
-}
-.adv-dec-panel::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 4px;
-  background: linear-gradient(180deg, var(--bull) 0%, var(--bear) 100%);
-  border-radius: 4px 0 0 4px;
-}
-.adv-dec-panel.visible { display: block; }
 
-.adv-dec-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 18px;
-}
-.adv-dec-title {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--text2);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.adv-dec-title i { color: var(--amber); }
-.adv-dec-subtitle {
-  font-size: 10px;
-  font-family: var(--mono);
-  color: var(--text3);
-  letter-spacing: 1px;
-}
 
-.adv-dec-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr auto;
-  gap: 16px;
-  align-items: center;
-}
 
-.adv-box, .dec-box, .neut-box {
-  border-radius: var(--radius);
-  padding: 14px 18px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  position: relative;
-  overflow: hidden;
-}
-.adv-box {
-  background: rgba(5,150,105,0.06);
-  border: 1px solid rgba(5,150,105,0.2);
-}
-.dec-box {
-  background: rgba(220,38,38,0.06);
-  border: 1px solid rgba(220,38,38,0.2);
-}
-.neut-box {
-  background: rgba(45,53,80,0.04);
-  border: 1px solid var(--border);
-}
 
-.adv-dec-ico {
-  width: 40px; height: 40px;
-  border-radius: 8px;
-  display: grid;
-  place-items: center;
-  font-size: 18px;
-  flex-shrink: 0;
-}
-.adv-box .adv-dec-ico  { background: rgba(5,150,105,0.12); color: var(--bull); }
-.dec-box .adv-dec-ico  { background: rgba(220,38,38,0.12); color: var(--bear); }
-.neut-box .adv-dec-ico { background: rgba(45,53,80,0.07); color: var(--text2); }
 
-.adv-dec-body label {
-  display: block;
-  font-size: 9px;
-  color: var(--text2);
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  font-family: var(--mono);
-  font-weight: 600;
-  margin-bottom: 2px;
-}
-.adv-dec-body strong {
-  font-family: var(--mono);
-  font-size: 28px;
-  font-weight: 700;
-  line-height: 1;
-}
-.adv-box  .adv-dec-body strong { color: var(--bull); }
-.dec-box  .adv-dec-body strong { color: var(--bear); }
-.neut-box .adv-dec-body strong { color: var(--text2); }
 
-.adv-dec-body .sub {
-  font-size: 10px;
-  font-family: var(--mono);
-  color: var(--text3);
-  margin-top: 2px;
-}
+
+
+
+.adv-box, .dec-box, 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* Bar + ratio section */
 .adv-dec-ratio-wrap {
@@ -962,137 +1022,46 @@ body::before {
   color: var(--text2);
   margin-bottom: 6px;
 }
-.ratio-score {
-  font-size: 18px;
-  font-weight: 700;
-  font-family: var(--mono);
-  text-align: center;
-  margin-bottom: 8px;
-  letter-spacing: 1px;
-}
-.ratio-score.bullish { color: var(--bull); }
-.ratio-score.bearish { color: var(--bear); }
-.ratio-score.neutral { color: var(--text2); }
 
-.adv-bar-track {
-  height: 10px;
-  background: var(--bg3);
-  border-radius: 5px;
-  overflow: hidden;
-  display: flex;
-  border: 1px solid var(--border);
-  margin-bottom: 6px;
-}
-.adv-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #059669, #10b981);
-  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  border-radius: 5px 0 0 5px;
-}
-.dec-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #ef4444, #dc2626);
-  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  border-radius: 0 5px 5px 0;
-}
 
-.adv-bar-labels {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--mono);
-  font-size: 9px;
-  color: var(--text3);
-  letter-spacing: 0.5px;
-}
 
-.market-sentiment {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  margin-top: 10px;
-}
-.market-sentiment.bullish { background: rgba(5,150,105,0.1); color: var(--bull); border: 1px solid rgba(5,150,105,0.25); }
-.market-sentiment.bearish { background: rgba(220,38,38,0.1); color: var(--bear); border: 1px solid rgba(220,38,38,0.25); }
-.market-sentiment.neutral { background: rgba(45,53,80,0.06); color: var(--text2); border: 1px solid var(--border); }
 
-.adv-dec-mode-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  background: rgba(217,119,6,0.10);
-  color: var(--amber);
-  border: 1px solid rgba(217,119,6,0.25);
-  transition: all 0.3s;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
 .adv-dec-mode-badge.filtered {
   background: rgba(99,102,241,0.10);
   color: #6366f1;
   border-color: rgba(99,102,241,0.25);
 }
 
-.adv-toggle-wrap {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  cursor: pointer;
-  user-select: none;
-}
-.adv-toggle-label {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--text2);
-  transition: color 0.25s;
-  letter-spacing: 0.5px;
-}
-.adv-toggle {
-  width: 40px;
-  height: 20px;
-  background: rgba(217,119,6,0.15);
-  border: 1px solid rgba(217,119,6,0.3);
-  border-radius: 10px;
-  position: relative;
-  cursor: pointer;
-  transition: background 0.3s, border-color 0.3s;
-}
-.adv-toggle.active {
-  background: rgba(99,102,241,0.15);
-  border-color: rgba(99,102,241,0.35);
-}
-.adv-toggle-knob {
-  position: absolute;
-  top: 2px; left: 2px;
-  width: 14px; height: 14px;
-  border-radius: 50%;
-  background: var(--amber);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-  transition: left 0.25s cubic-bezier(0.34,1.56,0.64,1), background 0.25s;
-}
-.adv-toggle.active .adv-toggle-knob {
-  left: 22px;
-  background: #6366f1;
-}
+
+
+
+
+
+.adv-toggle.active 
 
 /* ═══════════════════════════════════════════════════════
    FOOTER
 ═══════════════════════════════════════════════════════ */
 .footer {
   text-align: center;
-  padding: 16px;
+  padding: 8px;
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 9px;
   color: var(--text3);
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -1100,22 +1069,9 @@ body::before {
 ═══════════════════════════════════════════════════════ */
 
 /* Trade Intelligence Panel */
-.trade-intel-panel {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 16px 20px;
-  display: none;
-}
-.trade-intel-panel.visible { display: block; }
-.ti-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-  gap: 8px;
-}
+
+
+
 .ti-title {
   font-family: var(--mono);
   font-size: 11px;
@@ -1128,38 +1084,39 @@ body::before {
 }
 .ti-body {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 5px;
+  padding-top: 6px;
 }
 .ti-card {
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 12px 14px;
+  padding: 6px 8px;
 }
 .ti-card-title {
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 700;
   color: var(--text3);
   letter-spacing: 1px;
   text-transform: uppercase;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
 }
 .ti-big {
   font-family: var(--mono);
-  font-size: 22px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--bright);
   line-height: 1;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 .ti-sub {
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 8px;
   color: var(--text3);
   line-height: 1.6;
 }
@@ -1256,40 +1213,16 @@ body::before {
 }
 
 /* Capital input in params */
-.capital-input-wrap {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 8px;
-  padding: 8px 10px;
-  background: var(--amber-g);
-  border: 1px solid rgba(217,119,6,0.2);
-  border-radius: var(--radius);
-}
-.capital-input-wrap label {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--amber);
-  white-space: nowrap;
-}
-.capital-input-wrap input {
-  flex: 1;
-  padding: 4px 8px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-family: var(--mono);
-  font-size: 12px;
-  background: var(--bg2);
-  color: var(--text);
-}
+
+
+
 
 @media (max-width: 900px) { .ti-body { grid-template-columns: 1fr 1fr; } }
 .regime-panel {
   background: var(--bg2);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 14px 20px;
+  border-radius: var(--radius);
+  padding: 8px 12px;
   display: none;
   position: relative;
   overflow: hidden;
@@ -1298,8 +1231,8 @@ body::before {
   content: '';
   position: absolute;
   left: 0; top: 0; bottom: 0;
-  width: 4px;
-  border-radius: 4px 0 0 4px;
+  width: 3px;
+  border-radius: 3px 0 0 3px;
 }
 .regime-panel.regime-full::before   { background: var(--bull); }
 .regime-panel.regime-caution::before{ background: var(--amber); }
@@ -1310,53 +1243,53 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 .regime-title {
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   color: var(--text);
   letter-spacing: 1px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 .regime-overall {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 16px;
+  gap: 6px;
+  padding: 4px 12px;
   border-radius: 20px;
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
-.ro-full    { background: rgba(5,150,105,0.12); color: #047857; border: 1.5px solid rgba(5,150,105,0.4); }
-.ro-caution { background: rgba(217,119,6,0.12); color: var(--amber); border: 1.5px solid rgba(217,119,6,0.4); }
-.ro-bear    { background: rgba(220,38,38,0.10); color: var(--bear); border: 1.5px solid rgba(220,38,38,0.35); }
+.ro-full    { background: rgba(5,150,105,0.12); color: #047857; border: 1px solid rgba(5,150,105,0.4); }
+.ro-caution { background: rgba(217,119,6,0.12); color: var(--amber); border: 1px solid rgba(217,119,6,0.4); }
+.ro-bear    { background: rgba(220,38,38,0.10); color: var(--bear); border: 1px solid rgba(220,38,38,0.35); }
 
 .regime-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 6px;
 }
 .regime-card {
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 10px 14px;
+  padding: 7px 10px;
 }
 .rc-name {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
   color: var(--text2);
   letter-spacing: 1px;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   text-transform: uppercase;
 }
 .rc-row {
@@ -1364,8 +1297,8 @@ body::before {
   justify-content: space-between;
   align-items: center;
   font-family: var(--mono);
-  font-size: 10px;
-  margin-bottom: 4px;
+  font-size: 9px;
+  margin-bottom: 2px;
 }
 .rc-label { color: var(--text3); }
 .rc-val   { font-weight: 700; }
@@ -1375,10 +1308,10 @@ body::before {
 .rc-amber { color: var(--amber); }
 
 .regime-hma-bar {
-  height: 4px;
+  height: 3px;
   background: var(--bg);
   border-radius: 2px;
-  margin-top: 6px;
+  margin-top: 4px;
   overflow: hidden;
 }
 .regime-hma-fill {
@@ -1391,12 +1324,12 @@ body::before {
 .rhf-neut { background: linear-gradient(90deg, #9ca3af, #d1d5db); }
 
 .regime-note {
-  margin-top: 10px;
-  padding: 8px 12px;
+  margin-top: 6px;
+  padding: 6px 10px;
   border-radius: var(--radius);
   font-family: var(--mono);
-  font-size: 10px;
-  line-height: 1.7;
+  font-size: 9px;
+  line-height: 1.6;
 }
 .rn-full    { background: rgba(5,150,105,0.07);  color: #047857; border: 1px solid rgba(5,150,105,0.2); }
 .rn-caution { background: rgba(217,119,6,0.07);  color: var(--amber-d); border: 1px solid rgba(217,119,6,0.25); }
@@ -1404,9 +1337,9 @@ body::before {
 
 .regime-no-data {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 9px;
   color: var(--text3);
-  padding: 8px 0;
+  padding: 4px 0;
   text-align: center;
 }
 
@@ -1419,13 +1352,13 @@ body::before {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 42px; height: 42px;
+  width: 28px; height: 28px;
   border-radius: 50%;
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: -0.5px;
-  border: 2px solid;
+  border: 1.5px solid;
   flex-shrink: 0;
 }
 .score-s  { background: rgba(5,150,105,0.12);  color: #047857; border-color: rgba(5,150,105,0.35); }
@@ -1480,39 +1413,13 @@ body::before {
 }
 
 /* ── Trigger Breadth Meter ── */
-.breadth-panel {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 16px 20px;
-  display: none;
-}
-.breadth-panel.visible { display: block; }
 
-.breadth-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.breadth-title {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text);
-  letter-spacing: 1px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.breadth-body {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 14px;
-}
-@media (max-width: 900px) { .breadth-body { grid-template-columns: 1fr; } }
+
+
+
+
+
+@media (max-width: 900px) {  }
 
 /* Score dial */
 .breadth-score-wrap {
@@ -1520,16 +1427,16 @@ body::before {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
 }
 .breadth-dial {
   position: relative;
-  width: 110px;
-  height: 110px;
+  width: 65px;
+  height: 65px;
 }
-.breadth-dial svg { width: 110px; height: 110px; }
-.dial-track { fill: none; stroke: var(--bg3); stroke-width: 10; }
-.dial-fill  { fill: none; stroke-width: 10; stroke-linecap: round;
+.breadth-dial svg { width: 65px; height: 65px; }
+.dial-track { fill: none; stroke: var(--bg3); stroke-width: 8; }
+.dial-fill  { fill: none; stroke-width: 8; stroke-linecap: round;
               transform: rotate(-90deg); transform-origin: 55px 55px;
               transition: stroke-dashoffset 0.8s cubic-bezier(0.34,1.56,0.64,1),
                           stroke 0.5s; }
@@ -1538,45 +1445,45 @@ body::before {
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
 }
-.dial-score  { font-family: var(--mono); font-size: 26px; font-weight: 700; line-height: 1; }
-.dial-label  { font-family: var(--mono); font-size: 9px; color: var(--text3); letter-spacing: 1px; }
+.dial-score  { font-family: var(--mono); font-size: 16px; font-weight: 700; line-height: 1; }
+.dial-label  { font-family: var(--mono); font-size: 7px; color: var(--text3); letter-spacing: 1px; }
 
 /* Bar stats */
 .breadth-stats {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 8px;
+  gap: 5px;
 }
 .bs-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 .bs-label {
   font-family: var(--mono);
   font-size: 9px;
   color: var(--text3);
-  min-width: 36px;
+  min-width: 32px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 .bs-bar {
   flex: 1;
-  height: 8px;
+  height: 6px;
   background: var(--bg3);
-  border-radius: 4px;
+  border-radius: 3px;
   overflow: hidden;
 }
-.bs-fill { height: 100%; border-radius: 4px; transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+.bs-fill { height: 100%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1); }
 .bsf-buy  { background: linear-gradient(90deg, #059669, #10b981); }
 .bsf-sell { background: linear-gradient(90deg, #dc2626, #ef4444); }
 .bsf-neut { background: linear-gradient(90deg, #9ca3af, #d1d5db); }
 .bs-count {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
-  min-width: 28px;
+  min-width: 26px;
   text-align: right;
 }
 
@@ -1626,30 +1533,10 @@ body::before {
 }
 
 /* Sector Breadth Panel */
-.sector-breadth-panel {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 14px 18px;
-  display: none;
-}
-.sector-breadth-panel.visible { display: block; }
-.sb-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-.sb-title {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text);
-  letter-spacing: 1px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+
+
+
+
 .sb-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -1731,7 +1618,7 @@ body::before {
   .control-deck { grid-template-columns: 1fr; }
   .param-grid   { grid-template-columns: repeat(2,1fr); }
   .stats-bar    { grid-template-columns: repeat(3,1fr); }
-  .adv-dec-grid { grid-template-columns: 1fr 1fr; }
+  
   .sb-grid      { grid-template-columns: 1fr 1fr; }
 }
 </style>
@@ -1786,57 +1673,43 @@ body::before {
   <!-- ── CONTROL DECK ── -->
   <div class="control-deck">
 
-    <!-- Upload -->
+    <!-- Col 1: Upload -->
     <div class="card">
-      <div class="card-title"><i class="fas fa-file-csv"></i> Upload CSV Data</div>
-
-      <!-- METHOD 1: Direct file input - visible, no JS tricks -->
-      <div style="margin-bottom:10px;">
-        <div style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--text2);
-                    letter-spacing:1px;margin-bottom:5px;">METHOD 1 — SELECT FILE</div>
-        <input type="file" id="fileInput" accept=".csv,.txt"
-               onchange="handleFileSelect(this)"
-               style="display:block;width:100%;padding:8px;
-                      border:1.5px solid var(--border2);border-radius:var(--radius);
-                      background:var(--bg3);font-family:var(--mono);font-size:11px;
-                      color:var(--text);cursor:pointer;box-sizing:border-box;">
-      </div>
-
-      <!-- METHOD 2: Paste CSV text - works in 100% of environments -->
-      <div>
-        <div style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--text2);
-                    letter-spacing:1px;margin-bottom:5px;">METHOD 2 — PASTE CSV TEXT</div>
-        <textarea id="csvPaste"
-                  placeholder="Paste your CSV content here..."
-                  style="width:100%;height:70px;padding:6px 8px;
-                         border:1.5px solid var(--border2);border-radius:var(--radius);
-                         background:var(--bg3);font-family:var(--mono);font-size:10px;
-                         color:var(--text);resize:vertical;box-sizing:border-box;"></textarea>
-        <button onclick="loadFromPaste()"
-                style="width:100%;margin-top:4px;padding:7px;
-                       background:var(--amber);color:#fff;border:none;
-                       border-radius:var(--radius);font-family:var(--mono);
-                       font-size:11px;font-weight:700;cursor:pointer;letter-spacing:0.5px;">
-          <i class="fas fa-paste"></i> LOAD PASTED CSV
-        </button>
-      </div>
-
+      <div class="card-title"><i class="fas fa-file-csv"></i> Upload CSV</div>
+      <input type="file" id="fileInput" accept=".csv,.txt"
+             onchange="handleFileSelect(this)"
+             style="display:block;width:100%;padding:5px;
+                    border:1px solid var(--border2);border-radius:var(--radius);
+                    background:var(--bg3);font-family:var(--mono);font-size:10px;
+                    color:var(--text);cursor:pointer;box-sizing:border-box;margin-bottom:5px;">
+      <textarea id="csvPaste" placeholder="Or paste CSV text here..."
+                style="width:100%;height:36px;padding:4px 6px;
+                       border:1px solid var(--border2);border-radius:var(--radius);
+                       background:var(--bg3);font-family:var(--mono);font-size:9px;
+                       color:var(--text);resize:none;box-sizing:border-box;"></textarea>
+      <button onclick="loadFromPaste()"
+              style="width:100%;margin-top:3px;padding:4px;
+                     background:var(--amber);color:#000;border:none;
+                     border-radius:var(--radius);font-family:var(--mono);
+                     font-size:10px;font-weight:700;cursor:pointer;">
+        <i class="fas fa-paste"></i> Load Pasted CSV
+      </button>
       <div id="fileStatus" style="font-family:var(--mono);font-size:9px;color:var(--text3);
-                  margin-top:8px;text-align:center;min-height:16px;"></div>
-
-      <div class="format-box" style="margin-top:8px;">
-        <div><span class="k">Required:</span> <span class="v">Date, Symbol, Close</span></div>
-        <div><span class="k">Optional:</span> Index, Sector, Open, High, Low</div>
-        <div><span class="k">Format:</span> DD-MM-YYYY or YYYY-MM-DD</div>
-        <div><span class="k">Min:</span> 60 rows per stock</div>
-        <div><span class="k">Regime:</span> Auto-detected from NSEI / NIFTY50 / NIFTY_TOTAL_MKT rows</div>
-      </div>
+                  margin-top:4px;text-align:center;min-height:12px;"></div>
+      <details style="margin-top:3px;">
+        <summary style="font-family:var(--mono);font-size:9px;color:var(--text3);cursor:pointer;">Format help</summary>
+        <div class="format-box" style="margin-top:3px;">
+          <div><span class="k">Required:</span> <span class="v">Date, Symbol, Close</span></div>
+          <div><span class="k">Optional:</span> Index, Sector, Open, High, Low</div>
+          <div><span class="k">Format:</span> YYYY-MM-DD or DD-MM-YYYY</div>
+          <div><span class="k">Regime:</span> Include NSEI / CRSLDX rows</div>
+        </div>
+      </details>
     </div>
 
-    <!-- Parameters + Actions -->
-    <div class="card">
-      <div class="card-title"><i class="fas fa-sliders-h"></i> Parameters</div>
-      <div class="param-grid">
+    <!-- Col 2: Params + Buttons -->
+    <div class="card" style="min-width:0;">
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:5px;">
         <div class="param-item">
           <label>Min Days</label>
           <input type="number" id="p_minDays" value="60" min="20" max="365">
@@ -1854,66 +1727,155 @@ body::before {
           <input type="number" id="p_smiK" value="10" min="3" max="30">
         </div>
         <div class="param-item">
-          <label>SMI Bull %</label>
+          <label>SMI Bull%</label>
           <input type="number" id="p_smiBull" value="40" min="10" max="100">
         </div>
         <div class="param-item">
-          <label>SMI Bear %</label>
+          <label>SMI Bear%</label>
           <input type="number" id="p_smiBear" value="-40" min="-100" max="-10">
         </div>
         <div class="param-item">
-          <label>Band Lookback</label>
-          <input type="number" id="p_zoneLB" value="60" min="30" max="252">
+          <label>Lookback</label>
+          <input type="number" id="p_zoneLB" value="100" min="30" max="252">
         </div>
         <div class="param-item">
-          <label>Signal Filter</label>
+          <label>Signal</label>
           <select id="p_sigFilter">
-            <option value="all">All Signals</option>
-            <option value="action">Action Only (no WAIT)</option>
-            <option value="buy">Buy Only</option>
-            <option value="sell">Sell Only</option>
+            <option value="all">All</option>
+            <option value="action">Action</option>
+            <option value="buy">Buy</option>
+            <option value="sell">Sell</option>
           </select>
         </div>
         <div class="param-item">
-          <label>Sort By</label>
-          <select id="p_sortBy">
-            <option value="symbol">Symbol A→Z</option>
-            <option value="signal">Signal Strength</option>
-            <option value="zone">Zone (Cheap→Exp)</option>
-            <option value="price">Price</option>
-          </select>
+          <label>Capital ₹</label>
+          <input type="number" id="p_capital" value="500000" min="10000" step="50000" onchange="applyFilters()">
+        </div>
+        <div class="param-item">
+          <label>Per Trade ₹</label>
+          <input type="number" id="p_perTrade" value="25000" min="5000" step="5000" onchange="applyFilters()">
         </div>
       </div>
-
-      <div class="capital-input-wrap">
-        <label><i class="fas fa-indian-rupee-sign"></i> Portfolio Capital</label>
-        <input type="number" id="p_capital" value="500000" min="10000" step="50000"
-               placeholder="500000" onchange="applyFilters()">
-        <span style="font-family:var(--mono);font-size:10px;color:var(--amber)">₹</span>
-      </div>
-      <div class="capital-input-wrap" style="margin-top:4px;">
-        <label><i class="fas fa-tag"></i> Per Trade (Rs.)</label>
-        <input type="number" id="p_perTrade" value="25000" min="5000" step="5000"
-               placeholder="25000" onchange="applyFilters()">
-        <span style="font-family:var(--mono);font-size:10px;color:var(--amber)">₹</span>
-      </div>
-
+      <select id="p_sortBy" style="display:none"><option value="symbol">Symbol</option></select>
       <div class="btn-row">
         <button class="btn btn-primary" id="runBtn" disabled>
-          <i class="fas fa-bolt"></i> Generate Signals
+          <i class="fas fa-bolt"></i> Generate
         </button>
         <button class="btn btn-ghost" id="clearBtn">
           <i class="fas fa-trash-alt"></i> Clear
         </button>
         <button class="btn btn-export" id="exportBtn" style="display:none">
-          <i class="fas fa-download"></i> Export CSV
+          <i class="fas fa-download"></i> Export
         </button>
         <button class="btn btn-sample" id="sampleBtn">
-          <i class="fas fa-vial"></i> Load Sample
+          <i class="fas fa-vial"></i> Sample
         </button>
       </div>
     </div>
-  </div>
+
+    <!-- Col 3: Breadth Meter + ADV:DEC:NEUTRAL stacked -->
+    <div style="display:flex;flex-direction:column;gap:6px;">
+
+      <!-- TRIGGER BREADTH -->
+      <div id="breadthPanel" style="display:none;background:var(--bg2);border:1px solid var(--border);
+           border-radius:var(--radius);padding:10px 12px;box-shadow:var(--shadow-sm);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text);letter-spacing:0.5px;">
+            <i class="fas fa-gauge-high" style="color:var(--amber);margin-right:5px;"></i>TRIGGER BREADTH
+          </span>
+          <span id="breadthDate" style="font-family:var(--mono);font-size:10px;color:var(--text3);"></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="position:relative;width:70px;height:70px;flex-shrink:0;">
+            <svg viewBox="0 0 110 110" style="width:70px;height:70px;">
+              <circle class="dial-track" cx="55" cy="55" r="42" stroke-dasharray="263.9" stroke-dashoffset="0"/>
+              <circle class="dial-fill" id="dialFill" cx="55" cy="55" r="42"
+                      stroke-dasharray="263.9" stroke-dashoffset="263.9" stroke="#9ca3af"/>
+            </svg>
+            <div class="dial-text-val">
+              <span id="dialScore" style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--wait);line-height:1;">—</span>
+              <span style="font-family:var(--mono);font-size:8px;color:var(--text3);letter-spacing:1px;">SCORE</span>
+            </div>
+          </div>
+          <div style="flex:1;">
+            <div id="breadthGrade" style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;">NO DATA</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+              <span style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--bull);width:30px;">BUY</span>
+              <div style="flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;">
+                <div id="bsBuyFill" style="height:100%;background:var(--bull);border-radius:4px;width:0%;transition:width 0.5s;"></div>
+              </div>
+              <span id="bsBuyCount" style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--bull);width:38px;text-align:right;">0</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--bear);width:30px;">SELL</span>
+              <div style="flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;">
+                <div id="bsSellFill" style="height:100%;background:var(--bear);border-radius:4px;width:0%;transition:width 0.5s;"></div>
+              </div>
+              <span id="bsSellCount" style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--bear);width:38px;text-align:right;">0</span>
+            </div>
+            <div style="font-family:var(--mono);font-size:11px;color:var(--text2);margin-top:5px;">
+              B:S = <span id="bsRatio" style="color:var(--amber);font-weight:700;">—</span>
+            </div>
+          </div>
+        </div>
+        <div id="breadthVerdict" style="margin-top:6px;"></div>
+        <div id="breadthSizeRec" style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text);margin-top:2px;"></div>
+        <div id="breadthAdvice" style="font-family:var(--mono);font-size:10px;color:var(--text2);margin-top:3px;line-height:1.5;"></div>
+        <div id="hotSectors" style="margin-top:5px;display:flex;flex-wrap:wrap;gap:3px;">
+          <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">—</span>
+        </div>
+      </div>
+
+      <!-- ADV : DEC : NEUTRAL -->
+      <div id="advDecPanel" style="display:none;background:var(--bg2);border:1px solid var(--border);
+           border-radius:var(--radius);padding:10px 12px;box-shadow:var(--shadow-sm);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text);letter-spacing:0.5px;">
+            <i class="fas fa-chart-bar" style="color:var(--amber);margin-right:5px;"></i>ADV · DEC · NEUTRAL
+          </span>
+          <div style="display:flex;align-items:center;gap:5px;cursor:pointer;" onclick="toggleAdvDecMode()">
+            <div class="adc-toggle" id="advToggle"><div class="adc-toggle-knob"></div></div>
+            <span id="advDecModeBadge" style="font-family:var(--mono);font-size:10px;color:var(--amber);font-weight:700;">ALL</span>
+          </div>
+        </div>
+        <!-- 3 big numbers -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;
+                    border:1px solid var(--border);border-radius:var(--radius);
+                    overflow:hidden;margin-bottom:8px;">
+          <div style="text-align:center;padding:8px 4px;border-right:1px solid var(--border);background:rgba(5,150,105,0.05);">
+            <div id="advCount" style="font-family:var(--mono);font-size:24px;font-weight:700;color:var(--bull);line-height:1;">0</div>
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:2px;">▲ BUY</div>
+            <div id="advPct" style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--bull);margin-top:1px;">0%</div>
+          </div>
+          <div style="text-align:center;padding:8px 4px;border-right:1px solid var(--border);background:rgba(220,38,38,0.05);">
+            <div id="decCount" style="font-family:var(--mono);font-size:24px;font-weight:700;color:var(--bear);line-height:1;">0</div>
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:2px;">▼ SELL</div>
+            <div id="decPct" style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--bear);margin-top:1px;">0%</div>
+          </div>
+          <div style="text-align:center;padding:8px 4px;background:rgba(107,114,128,0.05);">
+            <div id="neutCount" style="font-family:var(--mono);font-size:24px;font-weight:700;color:var(--wait);line-height:1;">0</div>
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:2px;">— NEUT</div>
+            <div id="neutPct" style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--wait);margin-top:1px;">0%</div>
+          </div>
+        </div>
+        <!-- 3-segment colour bar -->
+        <div style="height:7px;border-radius:4px;overflow:hidden;display:flex;margin-bottom:8px;background:var(--bg3);">
+          <div id="advBarFill" style="height:100%;background:var(--bull);transition:width 0.5s;width:0%;border-radius:4px 0 0 4px;"></div>
+          <div id="decBarFill" style="height:100%;background:var(--bear);transition:width 0.5s;width:0%;"></div>
+          <div id="neutBarFill" style="height:100%;background:#9ca3af;opacity:0.4;flex:1;border-radius:0 4px 4px 0;"></div>
+        </div>
+        <!-- Ratio + sentiment -->
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-family:var(--mono);">
+            <span style="font-size:10px;color:var(--text3);">Ratio </span>
+            <span id="ratioScore" style="font-size:16px;font-weight:700;" class="adc-ratio-val neutral">—</span>
+          </div>
+          <span id="marketSentiment" class="adc-sentiment neutral" style="font-size:11px;padding:3px 10px;">NO DATA</span>
+        </div>
+      </div>
+
+    </div><!-- end col 3 -->
+  </div><!-- end control-deck -->
 
   <!-- ── STATS ── -->
   <div class="stats-bar" id="statsBar">
@@ -1923,23 +1885,23 @@ body::before {
     </div>
     <div class="stat">
       <div class="stat-ico g"><i class="fas fa-arrow-trend-up"></i></div>
-      <div class="stat-body"><label>Buy Signals</label><strong id="sBuy">0</strong></div>
+      <div class="stat-body"><label>Buy</label><strong id="sBuy">0</strong></div>
     </div>
     <div class="stat">
       <div class="stat-ico r"><i class="fas fa-arrow-trend-down"></i></div>
-      <div class="stat-body"><label>Sell Signals</label><strong id="sSell">0</strong></div>
+      <div class="stat-body"><label>Sell</label><strong id="sSell">0</strong></div>
     </div>
     <div class="stat">
       <div class="stat-ico o"><i class="fas fa-right-from-bracket"></i></div>
-      <div class="stat-body"><label>Exit Signals</label><strong id="sExit">0</strong></div>
+      <div class="stat-body"><label>Exit</label><strong id="sExit">0</strong></div>
     </div>
     <div class="stat">
       <div class="stat-ico d"><i class="fas fa-pause"></i></div>
-      <div class="stat-body"><label>Wait / No Signal</label><strong id="sWait">0</strong></div>
+      <div class="stat-body"><label>Wait</label><strong id="sWait">0</strong></div>
     </div>
     <div class="stat">
       <div class="stat-ico a"><i class="fas fa-clock"></i></div>
-      <div class="stat-body"><label>Processed In</label><strong id="sTime">—</strong></div>
+      <div class="stat-body"><label>Time</label><strong id="sTime">—</strong></div>
     </div>
   </div>
 
@@ -1949,12 +1911,10 @@ body::before {
       <span id="progLabel">Processing...</span>
       <span id="progPct">0%</span>
     </div>
-    <div class="prog-track">
-      <div class="prog-fill" id="progFill"></div>
-    </div>
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
   </div>
 
-  <!-- ── SIGNAL SUMMARY ── -->
+  <!-- ── SIGNAL SUMMARY PILLS ── -->
   <div class="summary-row" id="summaryRow">
     <span class="sum-pill bull" data-type="buy"  onclick="quickFilter('buy')">▲ BUY: <span id="pBuy">0</span></span>
     <span class="sum-pill bear" data-type="sell" onclick="quickFilter('sell')">▼ SELL: <span id="pSell">0</span></span>
@@ -1963,83 +1923,18 @@ body::before {
     <span class="sum-pill all"  data-type="all"  onclick="quickFilter('all')">ALL SIGNALS</span>
   </div>
 
-  <!-- ── ADV : DEC RATIO ── -->
-  <div class="adv-dec-panel" id="advDecPanel">
-    <div class="adv-dec-header">
-      <div class="adv-dec-title">
-        <i class="fas fa-chart-bar"></i> ADV : DEC Ratio
-        <span class="adv-dec-mode-badge" id="advDecModeBadge">ALL STOCKS</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:14px;">
-        <div class="adv-dec-subtitle" id="advDecSubtitle">Advance / Decline · All Stocks</div>
-        <div class="adv-toggle-wrap" title="Toggle between All Stocks and Filtered View">
-          <span class="adv-toggle-label" id="advToggleLabelLeft" style="color:var(--amber);font-weight:700;">All</span>
-          <div class="adv-toggle" id="advToggle" onclick="toggleAdvDecMode()">
-            <div class="adv-toggle-knob" id="advToggleKnob"></div>
-          </div>
-          <span class="adv-toggle-label" id="advToggleLabelRight">Filtered</span>
-        </div>
-      </div>
-    </div>
-    <div class="adv-dec-grid">
-      <div class="adv-box">
-        <div class="adv-dec-ico"><i class="fas fa-arrow-trend-up"></i></div>
-        <div class="adv-dec-body">
-          <label>Advancing (Buy)</label>
-          <strong id="advCount">0</strong>
-          <div class="sub" id="advPct">0% of total</div>
-        </div>
-      </div>
-      <div class="dec-box">
-        <div class="adv-dec-ico"><i class="fas fa-arrow-trend-down"></i></div>
-        <div class="adv-dec-body">
-          <label>Declining (Sell)</label>
-          <strong id="decCount">0</strong>
-          <div class="sub" id="decPct">0% of total</div>
-        </div>
-      </div>
-      <div class="neut-box">
-        <div class="adv-dec-ico"><i class="fas fa-minus"></i></div>
-        <div class="adv-dec-body">
-          <label>Neutral (Exit/Wait)</label>
-          <strong id="neutCount">0</strong>
-          <div class="sub" id="neutPct">0% of total</div>
-        </div>
-      </div>
-      <div class="adv-dec-ratio-wrap">
-        <div class="ratio-score" id="ratioScore">—</div>
-        <div class="ratio-label">
-          <span id="advBarLabel" style="color:var(--bull)">ADV 0%</span>
-          <span id="decBarLabel" style="color:var(--bear)">DEC 0%</span>
-        </div>
-        <div class="adv-bar-track">
-          <div class="adv-bar-fill" id="advBarFill" style="width:0%"></div>
-          <div class="dec-bar-fill" id="decBarFill" style="width:0%"></div>
-        </div>
-        <div class="adv-bar-labels">
-          <span>← BEARISH</span>
-          <span>BULLISH →</span>
-        </div>
-        <div>
-          <span class="market-sentiment neutral" id="marketSentiment">
-            <i class="fas fa-circle-half-stroke"></i> NO DATA
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── TRADE INTELLIGENCE PANEL ── -->
-  <div class="trade-intel-panel" id="tradeIntelPanel">
-    <div class="ti-header">
-      <div class="ti-title">
+  <!-- ── TRADE INTELLIGENCE (collapsible) ── -->
+  <div class="collapsible-panel" id="tradeIntelPanel" onclick="togglePanel('tradeIntelPanel')">
+    <div class="collapsible-header">
+      <div class="collapsible-title">
         <i class="fas fa-brain"></i> TRADE INTELLIGENCE
-        <span style="font-size:9px;color:var(--text3);font-weight:400;">
-          Medallion-style portfolio metrics · Rs.25,000 per trade
-        </span>
       </div>
-      <span id="tiCapitalDisplay" style="font-family:var(--mono);font-size:10px;color:var(--amber);font-weight:700;"></span>
+      <div class="collapsible-summary" id="tiSummaryLine">
+        <span id="tiCapitalDisplay" style="color:var(--amber)"></span>
+      </div>
+      <i class="fas fa-chevron-down collapsible-chevron"></i>
     </div>
+    <div class="collapsible-body" onclick="event.stopPropagation()">
     <div class="ti-body">
 
       <!-- Card 1: Portfolio Heat -->
@@ -2134,100 +2029,24 @@ body::before {
       </div>
 
     </div>
-  </div>
+  </div><!-- end collapsible-body --></div><!-- end trade intel collapsible -->
 
-  <!-- ── TRIGGER BREADTH METER ── -->
-  <div class="breadth-panel" id="breadthPanel">
-    <div class="breadth-header">
-      <div class="breadth-title">
-        <i class="fas fa-gauge-high"></i> TRIGGER BREADTH METER
-        <span style="font-size:9px;color:var(--text3);font-weight:400;">
-          How strong is today's buying opportunity across your universe
-        </span>
-      </div>
-      <span id="breadthDate" style="font-family:var(--mono);font-size:10px;color:var(--text3)"></span>
-    </div>
-    <div class="breadth-body">
-
-      <!-- Col 1: Score Dial -->
-      <div class="breadth-score-wrap">
-        <div class="breadth-dial">
-          <svg viewBox="0 0 110 110">
-            <circle class="dial-track" cx="55" cy="55" r="42"
-                    stroke-dasharray="263.9" stroke-dashoffset="0"/>
-            <circle class="dial-fill" id="dialFill" cx="55" cy="55" r="42"
-                    stroke-dasharray="263.9" stroke-dashoffset="263.9" stroke="#9ca3af"/>
-          </svg>
-          <div class="dial-text-val">
-            <span class="dial-score" id="dialScore" style="color:var(--wait)">—</span>
-            <span class="dial-label">SCORE</span>
-          </div>
-        </div>
-        <div style="text-align:center">
-          <div style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text)" id="breadthGrade">NO DATA</div>
-          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:2px" id="breadthTotal">0 stocks scanned</div>
-        </div>
-      </div>
-
-      <!-- Col 2: Bar Stats -->
-      <div class="breadth-stats">
-        <div class="bs-row">
-          <span class="bs-label" style="color:var(--bull)">BUY</span>
-          <div class="bs-bar"><div class="bs-fill bsf-buy" id="bsBuyFill" style="width:0%"></div></div>
-          <span class="bs-count" style="color:var(--bull)" id="bsBuyCount">0</span>
-        </div>
-        <div class="bs-row">
-          <span class="bs-label" style="color:var(--bear)">SELL</span>
-          <div class="bs-bar"><div class="bs-fill bsf-sell" id="bsSellFill" style="width:0%"></div></div>
-          <span class="bs-count" style="color:var(--bear)" id="bsSellCount">0</span>
-        </div>
-        <div class="bs-row">
-          <span class="bs-label">EXIT</span>
-          <div class="bs-bar"><div class="bs-fill bsf-neut" id="bsExitFill" style="width:0%"></div></div>
-          <span class="bs-count" id="bsExitCount">0</span>
-        </div>
-        <div class="bs-row">
-          <span class="bs-label">WAIT</span>
-          <div class="bs-bar"><div class="bs-fill bsf-neut" id="bsWaitFill" style="width:0%"></div></div>
-          <span class="bs-count" id="bsWaitCount">0</span>
-        </div>
-        <div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border)">
-          <div style="font-family:var(--mono);font-size:9px;color:var(--text3)">BUY : SELL RATIO</div>
-          <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text);margin-top:2px" id="bsRatio">—</div>
-        </div>
-      </div>
-
-      <!-- Col 3: Verdict + Hot Sectors -->
-      <div class="breadth-verdict">
-        <div class="bv-box bv-normal" id="breadthVerdict">
-          <div class="bv-size" id="breadthSizeRec">—</div>
-          <div id="breadthAdvice">Run scan to see today's market breadth</div>
-        </div>
-        <div>
-          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:5px;letter-spacing:0.5px;">
-            🔥 HOT SECTORS (most buy triggers)
-          </div>
-          <div class="hot-sectors" id="hotSectors">
-            <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">—</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ── SECTOR BREADTH PANEL ── -->
-  <div class="sector-breadth-panel" id="sectorPanel">
-    <div class="sb-header">
-      <div class="sb-title">
+  <!-- ── SECTOR BREADTH (collapsible) ── -->
+  <div class="collapsible-panel" id="sectorPanel" onclick="togglePanel('sectorPanel')">
+    <div class="collapsible-header">
+      <div class="collapsible-title">
         <i class="fas fa-th-large"></i> SECTOR BREADTH
-        <span style="font-size:9px;color:var(--text3);font-weight:400;">Click a sector to filter · Green >60% bull · Red >60% bear</span>
       </div>
-      <button class="btn btn-ghost" onclick="clearSectorFilter()" style="padding:4px 10px;font-size:10px;">
-        <i class="fas fa-times"></i> Clear
-      </button>
+      <div class="collapsible-summary">
+        <span style="font-size:9px;color:var(--text3)">Click sector to filter · Green=BULL · Red=BEAR</span>
+        <button class="btn btn-ghost" onclick="event.stopPropagation();clearSectorFilter()"
+                style="padding:2px 8px;font-size:9px;">Clear</button>
+      </div>
+      <i class="fas fa-chevron-down collapsible-chevron"></i>
     </div>
-    <div class="sb-grid" id="sbGrid"></div>
+    <div class="collapsible-body" onclick="event.stopPropagation()">
+      <div class="sb-grid" id="sbGrid" style="padding-top:8px;"></div>
+    </div>
   </div>
 
   <!-- ── FILTER BAR ── -->
@@ -3280,29 +3099,19 @@ function updateStats(elapsed) {
 /* ───────────────────────────────────────────────
    ADV:DEC TOGGLE
 ─────────────────────────────────────────────── */
+/* ── Collapsible panel toggle ── */
+function togglePanel(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('open');
+}
+
 function toggleAdvDecMode() {
   advDecMode = advDecMode === 'all' ? 'filtered' : 'all';
-  const toggle = document.getElementById('advToggle');
-  const badge  = document.getElementById('advDecModeBadge');
-  const sub    = document.getElementById('advDecSubtitle');
-  const lblL   = document.getElementById('advToggleLabelLeft');
-  const lblR   = document.getElementById('advToggleLabelRight');
-
-  if (advDecMode === 'filtered') {
-    toggle.classList.add('active');
-    badge.textContent = 'FILTERED VIEW';
-    badge.classList.add('filtered');
-    sub.textContent = 'Advance / Decline · Current Filter';
-    lblL.style.color = 'var(--text2)'; lblL.style.fontWeight = '500';
-    lblR.style.color = '#6366f1';      lblR.style.fontWeight = '700';
-  } else {
-    toggle.classList.remove('active');
-    badge.textContent = 'ALL STOCKS';
-    badge.classList.remove('filtered');
-    sub.textContent = 'Advance / Decline · All Stocks';
-    lblL.style.color = 'var(--amber)'; lblL.style.fontWeight = '700';
-    lblR.style.color = 'var(--text2)'; lblR.style.fontWeight = '500';
-  }
+  const toggle  = document.getElementById('advToggle');
+  const badge   = document.getElementById('advDecModeBadge');
+  const isFiltered = advDecMode === 'filtered';
+  if (toggle) toggle.classList.toggle('active', isFiltered);
+  if (badge)  badge.textContent = isFiltered ? 'FILT' : 'ALL';
   refreshAdvDec();
 }
 
@@ -3316,63 +3125,57 @@ function refreshAdvDec() {
 }
 
 function updateAdvDec(adv, dec, exit, wait) {
-  const total  = adv + dec + exit + wait;
-  const neut   = exit + wait;
-  const advPct = total ? Math.round((adv / total) * 100) : 0;
-  const decPct = total ? Math.round((dec / total) * 100) : 0;
-  const neutPct= total ? Math.round((neut / total) * 100) : 0;
+  const total   = adv + dec + exit + wait;
+  const neut    = exit + wait;
+  const advPct  = total ? Math.round((adv  / total) * 100) : 0;
+  const decPct  = total ? Math.round((dec  / total) * 100) : 0;
+  const neutPct = total ? Math.round((neut / total) * 100) : 0;
 
-  document.getElementById('advCount').textContent  = adv;
-  document.getElementById('decCount').textContent  = dec;
-  document.getElementById('neutCount').textContent = neut;
-  document.getElementById('advPct').textContent    = advPct + '% of total';
-  document.getElementById('decPct').textContent    = decPct + '% of total';
-  document.getElementById('neutPct').textContent   = neutPct + '% of total';
+  // Counts
+  const setEl = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
+  setEl('advCount',  adv);
+  setEl('decCount',  dec);
+  setEl('neutCount', neut);
+  setEl('advPct',    advPct  + '%');
+  setEl('decPct',    decPct  + '%');
+  setEl('neutPct',   neutPct + '%');
 
-  // Bar: only adv vs dec (ignoring neutral for the ratio bar)
-  const advDec = adv + dec;
-  const advBarPct = advDec ? Math.round((adv / advDec) * 100) : 50;
-  const decBarPct = 100 - advBarPct;
+  // 3-segment bar: adv / dec / neutral proportional to total
+  const total3    = total || 1;
+  const advBarPct = Math.round(adv  / total3 * 100);
+  const decBarPct = Math.round(dec  / total3 * 100);
+  const ab = document.getElementById('advBarFill'); if(ab) ab.style.width = advBarPct + '%';
+  const db = document.getElementById('decBarFill'); if(db) db.style.width = decBarPct + '%';
+  // neutBarFill uses flex:1 so it fills the rest automatically
 
-  document.getElementById('advBarFill').style.width = advBarPct + '%';
-  document.getElementById('decBarFill').style.width = decBarPct + '%';
-  document.getElementById('advBarLabel').textContent = 'ADV ' + advBarPct + '%';
-  document.getElementById('decBarLabel').textContent = 'DEC ' + decBarPct + '%';
-
-  // Ratio score
+  // Ratio
   const ratioEl = document.getElementById('ratioScore');
-  if (!dec) {
-    ratioEl.textContent = adv ? '∞ : 1' : '—';
-    ratioEl.className = 'ratio-score bullish';
-  } else {
-    const ratio = (adv / dec).toFixed(2);
-    ratioEl.textContent = ratio + ' : 1';
-    ratioEl.className = 'ratio-score ' + (adv > dec ? 'bullish' : adv < dec ? 'bearish' : 'neutral');
+  if (ratioEl) {
+    const ratioTxt = !dec ? (adv ? '∞:1' : '—') : (adv/dec).toFixed(2) + ':1';
+    ratioEl.textContent = ratioTxt;
+    ratioEl.className   = 'adc-ratio-val ' + (adv > dec ? 'bullish' : adv < dec ? 'bearish' : 'neutral');
   }
 
-  // Sentiment badge
+  // Sentiment
   const sentEl = document.getElementById('marketSentiment');
-  if (!total) {
-    sentEl.className = 'market-sentiment neutral';
-    sentEl.innerHTML = '<i class="fas fa-circle-half-stroke"></i> NO DATA';
-  } else if (advPct >= 60) {
-    sentEl.className = 'market-sentiment bullish';
-    sentEl.innerHTML = '<i class="fas fa-arrow-trend-up"></i> BROADLY BULLISH';
-  } else if (advPct >= 50) {
-    sentEl.className = 'market-sentiment bullish';
-    sentEl.innerHTML = '<i class="fas fa-arrow-trend-up"></i> MILDLY BULLISH';
-  } else if (decPct >= 60) {
-    sentEl.className = 'market-sentiment bearish';
-    sentEl.innerHTML = '<i class="fas fa-arrow-trend-down"></i> BROADLY BEARISH';
-  } else if (decPct >= 50) {
-    sentEl.className = 'market-sentiment bearish';
-    sentEl.innerHTML = '<i class="fas fa-arrow-trend-down"></i> MILDLY BEARISH';
-  } else {
-    sentEl.className = 'market-sentiment neutral';
-    sentEl.innerHTML = '<i class="fas fa-minus"></i> MIXED / NEUTRAL';
+  if (sentEl) {
+    if (!total) {
+      sentEl.className = 'adc-sentiment neutral'; sentEl.textContent = 'NO DATA';
+    } else if (advPct >= 60) {
+      sentEl.className = 'adc-sentiment bullish'; sentEl.textContent = '▲ BROADLY BULL';
+    } else if (advPct >= 50) {
+      sentEl.className = 'adc-sentiment bullish'; sentEl.textContent = '▲ MILDLY BULL';
+    } else if (decPct >= 60) {
+      sentEl.className = 'adc-sentiment bearish'; sentEl.textContent = '▼ BROADLY BEAR';
+    } else if (decPct >= 50) {
+      sentEl.className = 'adc-sentiment bearish'; sentEl.textContent = '▼ MILDLY BEAR';
+    } else {
+      sentEl.className = 'adc-sentiment neutral'; sentEl.textContent = '— MIXED';
+    }
   }
 
-  document.getElementById('advDecPanel').classList.add('visible');
+  const panel = document.getElementById('advDecPanel');
+  if (panel) panel.style.display = 'block';
 }
 
 /* ───────────────────────────────────────────────
@@ -3470,11 +3273,12 @@ function buildTradeIntel(buy, sell, exit_, wait) {
     corrEl.innerHTML = '<div class="corr-tag corr-ok">✓ No correlation risk detected</div>';
   }
 
-  // Capital display
-  document.getElementById('tiCapitalDisplay').textContent =
-    `Capital: ₹${(capital/100000).toFixed(1)}L · Per Trade: ₹${perTrade.toLocaleString('en-IN')}`;
+  // Update collapsible header summary
+  const tiCap = document.getElementById('tiCapitalDisplay');
+  if (tiCap) tiCap.textContent =
+    `Capital ₹${(capital/100000).toFixed(1)}L · Trade ₹${perTrade.toLocaleString('en-IN')} · Heat ${heatNow.toFixed(1)}% · Kelly ₹${Math.round(halfKelly).toLocaleString('en-IN')}`;
 
-  document.getElementById('tradeIntelPanel').classList.add('visible');
+  document.getElementById('tradeIntelPanel').classList.add('open');
 }
 
 /* ───────────────────────────────────────────────
@@ -3537,33 +3341,31 @@ function buildBreadthMeter(buy, sell, exit_, wait) {
   scoreEl.textContent = score;
   scoreEl.style.color = dialColor;
 
-  document.getElementById('breadthGrade').textContent = grade;
-  document.getElementById('breadthGrade').style.color = dialColor;
-  document.getElementById('breadthTotal').textContent = total + ' stocks scanned · ' + buy + ' buy triggers';
+  const gradeEl = document.getElementById('breadthGrade');
+  if (gradeEl) { gradeEl.textContent = grade; gradeEl.style.color = dialColor; }
 
-  // Bars
-  document.getElementById('bsBuyFill').style.width  = buyPct + '%';
-  document.getElementById('bsSellFill').style.width = sellPct + '%';
-  document.getElementById('bsExitFill').style.width = exitPct + '%';
-  document.getElementById('bsWaitFill').style.width = waitPct + '%';
-  document.getElementById('bsBuyCount').textContent  = buy  + ' (' + buyPct + '%)';
-  document.getElementById('bsSellCount').textContent = sell + ' (' + sellPct + '%)';
-  document.getElementById('bsExitCount').textContent = exit_;
-  document.getElementById('bsWaitCount').textContent = wait;
-  document.getElementById('bsRatio').textContent     = sell > 0 ? (buy/sell).toFixed(2) + ' : 1' : buy > 0 ? '∞ : 1' : '— : —';
+  // Bars — only BUY and SELL in compact panel
+  const setW = (id, w) => { const e = document.getElementById(id); if(e) e.style.width = w + '%'; };
+  const setT = (id, t) => { const e = document.getElementById(id); if(e) e.textContent = t; };
+  setW('bsBuyFill',  buyPct);
+  setW('bsSellFill', sellPct);
+  setT('bsBuyCount',  buy  + ' (' + buyPct  + '%)');
+  setT('bsSellCount', sell + ' (' + sellPct + '%)');
+  setT('bsRatio', sell > 0 ? (buy/sell).toFixed(2) + ':1' : buy > 0 ? '∞:1' : '—');
 
   // Verdict
-  document.getElementById('breadthVerdict').className = verdictCls;
-  document.getElementById('breadthSizeRec').textContent = sizeRec;
-  document.getElementById('breadthAdvice').textContent  = advice;
+  const verdEl = document.getElementById('breadthVerdict');
+  if (verdEl) verdEl.className = verdictCls;
+  setT('breadthSizeRec', sizeRec);
+  setT('breadthAdvice',  advice);
 
-  // Hot sectors — top 5 by buy count
+  // Hot sectors — top 3 compact
   const hotEl = document.getElementById('hotSectors');
   hotEl.innerHTML = '';
   const sorted = Object.keys(sectorStats)
     .filter(s => sectorStats[s].buy > 0)
     .sort((a, b) => sectorStats[b].buy - sectorStats[a].buy)
-    .slice(0, 5);
+    .slice(0, 3);
 
   if (sorted.length) {
     sorted.forEach(sec => {
@@ -3574,20 +3376,27 @@ function buildBreadthMeter(buy, sell, exit_, wait) {
       hotEl.appendChild(tag);
     });
   } else {
-    hotEl.innerHTML = '<span style="font-family:var(--mono);font-size:9px;color:var(--text3)">No sectors with buy signals</span>';
+    hotEl.innerHTML = '<span style="font-family:var(--mono);font-size:9px;color:var(--text3)">—</span>';
   }
 
   // Date stamp
-  document.getElementById('breadthDate').textContent = new Date().toLocaleDateString('en-IN', {
-    weekday:'short', day:'numeric', month:'short', year:'numeric'
+  const dateEl = document.getElementById('breadthDate');
+  if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-IN', {
+    day:'numeric', month:'short'
   });
 
-  document.getElementById('breadthPanel').classList.add('visible');
+  // Show the inline breadth panel
+  const bp = document.getElementById('breadthPanel');
+  if (bp) bp.style.display = 'block';
 }
 
 /* ───────────────────────────────────────────────
-   SECTOR BREADTH
+   COLLAPSIBLE PANEL TOGGLE
 ─────────────────────────────────────────────── */
+function togglePanel(id) {
+  const panel = document.getElementById(id);
+  if (panel) panel.classList.toggle('open');
+}
 function buildSectorBreadth() {
   sectorStats = {};
   allSignals.forEach(s => {
@@ -3637,7 +3446,7 @@ function buildSectorBreadth() {
     grid.appendChild(card);
   });
 
-  document.getElementById('sectorPanel').classList.add('visible');
+  document.getElementById('sectorPanel').classList.add('open');
 }
 
 function clearSectorFilter() {
@@ -3710,7 +3519,7 @@ function applyFilters() {
   document.getElementById('fShowing').textContent = arr.length;
   document.getElementById('fTotal').textContent   = allSignals.length;
 
-  if (advDecMode === 'filtered' && document.getElementById('advDecPanel').classList.contains('visible')) {
+  if (advDecMode === 'filtered' && document.getElementById('advDecPanel').style.display !== 'none') {
     refreshAdvDec();
   }
 }
@@ -4214,14 +4023,19 @@ function clearAll() {
   document.getElementById('summaryRow').classList.remove('visible');
   document.getElementById('filterBar').classList.remove('visible');
   document.getElementById('advDecPanel').classList.remove('visible');
-  document.getElementById('tradeIntelPanel').classList.remove('visible');
-  document.getElementById('sectorPanel').classList.remove('visible');
+  document.getElementById('tradeIntelPanel').classList.remove('open');
+  document.getElementById('sectorPanel').classList.remove('open');
   document.getElementById('sbGrid').innerHTML = '';
-  document.getElementById('breadthPanel').classList.remove('visible');
-  document.getElementById('dialFill').style.strokeDashoffset = '263.9';
-  document.getElementById('dialFill').style.stroke = '#9ca3af';
-  document.getElementById('dialScore').textContent = '—';
-  document.getElementById('breadthGrade').textContent = 'NO DATA';
+  const bp = document.getElementById('breadthPanel');
+  if (bp) bp.style.display = 'none';
+  const adp = document.getElementById('advDecPanel');
+  if (adp) adp.style.display = 'none';
+  const df = document.getElementById('dialFill');
+  if (df) { df.style.strokeDashoffset = '263.9'; df.style.stroke = '#9ca3af'; }
+  const ds = document.getElementById('dialScore');
+  if (ds) ds.textContent = '—';
+  const bg = document.getElementById('breadthGrade');
+  if (bg) bg.textContent = 'NO DATA';
   document.getElementById('hotSectors').innerHTML = '<span style="font-family:var(--mono);font-size:9px;color:var(--text3)">—</span>';
   advDecMode = 'all';
   filterFresh = false; filterWeekly = false; filterHideB3 = false; filterSector = 'all';
@@ -4229,9 +4043,10 @@ function clearAll() {
     const el = document.getElementById(id);
     if (el) el.classList.remove('on');
   });
-  document.getElementById('advToggle').classList.remove('active');
-  document.getElementById('advDecModeBadge').textContent = 'ALL STOCKS';
-  document.getElementById('advDecModeBadge').classList.remove('filtered');
+  const advTog = document.getElementById('advToggle');
+  if (advTog) advTog.classList.remove('active');
+  const badge = document.getElementById('advDecModeBadge');
+  if (badge) badge.textContent = 'ALL';
   document.getElementById('tbody').innerHTML = `
     <tr><td colspan="15">
       <div class="empty-state">
