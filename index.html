@@ -1188,7 +1188,32 @@ body::before {
   color: var(--text3);
 }
 
-/* GTT columns in table */
+/* Action Tag */
+.action-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.at-strong-buy   { background: rgba(5,150,105,0.15);  color: #047857; border: 1.5px solid rgba(5,150,105,0.4); }
+.at-buy          { background: rgba(5,150,105,0.08);  color: var(--bull); border: 1px solid rgba(5,150,105,0.25); }
+.at-strong-short { background: rgba(220,38,38,0.15);  color: #991b1b; border: 1.5px solid rgba(220,38,38,0.4); }
+.at-short        { background: rgba(220,38,38,0.08);  color: var(--bear); border: 1px solid rgba(220,38,38,0.22); }
+.at-exit         { background: rgba(234,88,12,0.09);  color: var(--exit); border: 1px solid rgba(234,88,12,0.22); }
+.at-wait         { background: rgba(107,114,128,0.07);color: var(--wait); border: 1px solid var(--border); }
+.action-sub {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--text3);
+  margin-top: 3px;
+  letter-spacing: 0.5px;
+}
 .gtt-cell {
   font-family: var(--mono);
   font-size: 11px;
@@ -2279,6 +2304,7 @@ body::before {
         <thead>
           <tr>
             <th onclick="sortBy('score')" title="Signal Quality Score 0-100">Score</th>
+            <th onclick="sortBy('actionRank')">Action</th>
             <th onclick="sortBy('index')">Index</th>
             <th onclick="sortBy('sector')">Sector</th>
             <th onclick="sortBy('symbol')">Symbol</th>
@@ -2292,7 +2318,6 @@ body::before {
             <th onclick="sortBy('takeProfit')">Target</th>
             <th onclick="sortBy('stopLoss')">Stop Loss</th>
             <th>R:R</th>
-            <th>Option Spreads</th>
           </tr>
         </thead>
         <tbody id="tbody">
@@ -3127,6 +3152,7 @@ function processStock(sym, info, p) {
     const score = calcScore(sig, bd.bandZone, barsAgo, weeklyTrend, rr);
     const weeklyAligned = (sig.startsWith('B') && weeklyTrend === 'bull') ||
                           (sig.startsWith('S') && weeklyTrend === 'bear');
+    const actionTag = calcActionTag(sig, score, bd.bandZone, weeklyAligned, weeklyTrend);
 
     return {
       symbol: sym, index: info.index, sector: info.sector,
@@ -3137,8 +3163,8 @@ function processStock(sym, info, p) {
       takeProfit: tpsl.tp, stopLoss: tpsl.sl, rr,
       bandZone: bd.bandZone, zone: bd.bandZone,
       bands: bd, spreads: sprd, atr: Math.round(atr * 100) / 100,
-      // v5
       weeklyTrend, weeklyAligned, barsAgo, score,
+      actionTag, actionRank: actionTag.rank,
     };
 
   } catch (e) {
@@ -3716,8 +3742,49 @@ function sortBy(col) {
 }
 
 /* ───────────────────────────────────────────────
-   RENDER TABLE — DocumentFragment for performance
+   ACTION TAG — STRONG BUY / BUY / STRONG SHORT / SHORT
+   Combines signal + score + zone + weekly alignment
 ─────────────────────────────────────────────── */
+function calcActionTag(sig, score, bandZone, weeklyAligned, weeklyTrend) {
+  const isBuy  = sig === 'B1-OS' || sig === 'B1-MOM' || sig === 'B2';
+  const isSell = sig === 'S1-OB' || sig === 'S1-MOM' || sig === 'S2';
+  const isExit = ['HLE','LE','HSE','SE'].includes(sig);
+
+  const atREJLo  = bandZone === 'rej_lo';
+  const atREJHi  = bandZone === 'rej_hi';
+  const wBull    = weeklyTrend === 'bull';
+  const wBear    = weeklyTrend === 'bear';
+
+  // STRONG BUY: top signal + REJ zone + high score + weekly aligned
+  if (isBuy && score >= 70 && atREJLo && wBull)
+    return { tag:'🟢 STRONG BUY',  cls:'at-strong-buy',   rank:1, sub:'REJ↓ · W-BULL · Score '+score };
+
+  // BUY: good signal + buy zone + reasonable score
+  if (isBuy && score >= 55 && (atREJLo || bandZone === 'below_va'))
+    return { tag:'▲ BUY',          cls:'at-buy',           rank:2, sub:'Buy zone · Score '+score };
+
+  // STRONG SHORT: top signal + REJ zone + high score + weekly aligned
+  if (isSell && score >= 70 && atREJHi && wBear)
+    return { tag:'🔴 STRONG SHORT', cls:'at-strong-short',  rank:1, sub:'REJ↑ · W-BEAR · Score '+score };
+
+  // SHORT: good signal + sell zone + reasonable score
+  if (isSell && score >= 55 && (atREJHi || bandZone === 'above_va'))
+    return { tag:'▼ SHORT',         cls:'at-short',          rank:2, sub:'Sell zone · Score '+score };
+
+  // EXIT
+  if (isExit)
+    return { tag:'↔ EXIT',          cls:'at-exit',           rank:3, sub:'Close position' };
+
+  // Weak buy/sell
+  if (isBuy)
+    return { tag:'▲ WATCH',         cls:'at-buy',            rank:4, sub:'Weak · Score '+score };
+  if (isSell)
+    return { tag:'▼ WATCH',         cls:'at-short',          rank:4, sub:'Weak · Score '+score };
+
+  return { tag:'— WAIT',            cls:'at-wait',           rank:5, sub:'No clear action' };
+}
+
+
 const BAND_ZONE_LABELS = {
   'rej_lo':   '🟢 B1/B2 REJ↓',
   'below_va': '🔵 Below VA',
@@ -3912,8 +3979,14 @@ function renderTable(signals) {
     const wbTxt = aligned ? '✓ W-ALIGN' : conflict ? '✗ W-CONFLICT' : `W-${wt.toUpperCase()}`;
     const weeklyBadge = `<div class="weekly-badge ${wbCls}">${wbTxt}</div>`;
 
+    // Action tag
+    const at = s.actionTag || { tag:'— WAIT', cls:'at-wait', sub:'' };
+    const actionCell = `<div class="action-tag ${at.cls}">${at.tag}</div>
+      <div class="action-sub">${at.sub}</div>`;
+
     tr.innerHTML = `
       <td style="text-align:center">${scoreCell}${freshBadge}</td>
+      <td style="text-align:center;min-width:120px">${actionCell}</td>
       <td class="idx-cell">${s.index}</td>
       <td><span class="sec-tag" title="${s.sector}">${s.sector}</span></td>
       <td class="sym-cell">${s.symbol}</td>
@@ -3946,13 +4019,7 @@ function renderTable(signals) {
       <td>${gttCell}</td>
       <td class="tp-cell">${fmtPrice(s.takeProfit)}</td>
       <td class="sl-cell">${fmtPrice(s.stopLoss)}${rr}</td>
-      <td class="price-cell">${s.rr ? `<span style="font-size:12px;color:var(--text2)">1 : ${s.rr}</span>` : '—'}</td>
-      <td>
-        <div class="spread-block">
-          <div class="spread-row"><span class="sn">1.</span><span>${s.spreads[0]}</span></div>
-          <div class="spread-row"><span class="sn">2.</span><span>${s.spreads[1]}</span></div>
-        </div>
-      </td>`;
+      <td class="price-cell">${s.rr ? `<span style="font-size:12px;color:var(--text2)">1 : ${s.rr}</span>` : '—'}</td>`;
 
     frag.appendChild(tr);
   });
