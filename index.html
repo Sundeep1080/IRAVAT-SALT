@@ -1974,97 +1974,105 @@ body::before {
       <i class="fas fa-chevron-down collapsible-chevron"></i>
     </div>
     <div class="collapsible-body" onclick="event.stopPropagation()">
-    <div class="ti-body">
 
-      <!-- Card 1: Portfolio Heat -->
-      <div class="ti-card">
-        <div class="ti-card-title"><i class="fas fa-fire-flame-curved"></i> Portfolio Heat</div>
-        <div class="ti-big" id="tiHeatPct">—</div>
-        <div class="heat-track">
-          <div class="heat-fill hf-safe" id="tiHeatFill" style="width:0%"></div>
+      <!-- Row: 5 cards side by side -->
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding-top:8px;">
+
+        <!-- Card 1: Portfolio Heat -->
+        <div class="ti-card">
+          <div class="ti-card-title"><i class="fas fa-fire-flame-curved"></i> Portfolio Heat</div>
+          <div class="ti-big" id="tiHeatPct">—</div>
+          <div class="heat-track" style="margin:6px 0 3px;">
+            <div class="heat-fill hf-safe" id="tiHeatFill" style="width:0%"></div>
+          </div>
+          <div class="heat-labels"><span>0%</span><span>Safe &lt;12%</span><span>Max 20%</span></div>
+          <div class="ti-sub" id="tiHeatMsg" style="margin-top:5px;">Run scan to calculate</div>
         </div>
-        <div class="heat-labels"><span>0%</span><span>Safe &lt;12%</span><span>Max 20%</span></div>
-        <div class="ti-sub" id="tiHeatMsg" style="margin-top:6px;">
-          Run scan to calculate portfolio heat
+
+        <!-- Card 2: Position Capacity -->
+        <div class="ti-card">
+          <div class="ti-card-title"><i class="fas fa-layer-group"></i> Position Capacity</div>
+          <div class="ti-big" id="tiMaxPos">—</div>
+          <div class="ti-sub" id="tiMaxPosSub" style="margin-top:4px;">
+            Max simultaneous positions<br>₹25,000 × 4% SL per trade
+          </div>
+          <div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);">CAPITAL DEPLOYED</div>
+            <div class="ti-big" id="tiDeployed" style="font-size:15px;margin-top:2px;">—</div>
+          </div>
         </div>
+
+        <!-- Card 3: Kelly Analysis -->
+        <div class="ti-card">
+          <div class="ti-card-title"><i class="fas fa-calculator"></i> Kelly Analysis</div>
+          <div class="ti-sub" style="margin-bottom:6px;">At 70% win rate · 2%TP / 4%SL</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+            <div>
+              <div style="font-family:var(--mono);font-size:9px;color:var(--text3);">FULL KELLY</div>
+              <div class="ti-big" id="tiFullKelly" style="font-size:14px;color:var(--bear);">—</div>
+            </div>
+            <div>
+              <div style="font-family:var(--mono);font-size:9px;color:var(--text3);">HALF KELLY ✓</div>
+              <div class="ti-big" id="tiHalfKelly" style="font-size:14px;color:var(--bull);">—</div>
+            </div>
+          </div>
+          <div class="ti-sub" id="tiKellyMsg" style="margin-top:5px;"></div>
+        </div>
+
+        <!-- Card 4: Compounding -->
+        <div class="ti-card">
+          <div class="ti-card-title"><i class="fas fa-chart-line"></i> Compounding</div>
+          <div class="ti-sub" style="margin-bottom:5px;">₹25k/trade · 70% win rate</div>
+          <div style="display:flex;flex-direction:column;gap:3px;" id="tiCompound">
+            <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;">
+              <span style="color:var(--text3);">6 months</span>
+              <span id="ti6m" style="font-weight:700;color:var(--bull);">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;">
+              <span style="color:var(--text3);">1 year</span>
+              <span id="ti1y" style="font-weight:700;color:var(--bull);">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;">
+              <span style="color:var(--text3);">3 years</span>
+              <span id="ti3y" style="font-weight:700;color:var(--bull);">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;">
+              <span style="color:var(--text3);">5 years</span>
+              <span id="ti5y" style="font-weight:700;color:var(--amber);">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 5: Time Stop -->
+        <div class="ti-card">
+          <div class="ti-card-title"><i class="fas fa-clock"></i> Time Stop Rule</div>
+          <div class="ti-big" style="font-size:16px;color:var(--amber);">3 Days</div>
+          <div class="ti-sub" style="margin-top:4px;">
+            Exit if position has NOT moved +1% in 3 trading days after entry — regardless of GTT.<br><br>
+            Non-movement = signal was wrong = free capital for next opportunity.
+          </div>
+        </div>
+
       </div>
 
-      <!-- Card 2: Max Positions -->
-      <div class="ti-card">
-        <div class="ti-card-title"><i class="fas fa-layer-group"></i> Position Capacity</div>
-        <div class="ti-big" id="tiMaxPos">—</div>
-        <div class="ti-sub" id="tiMaxPosSub">
-          Simultaneous positions before heat limit<br>
-          Based on Rs.25,000 × 4% SL per trade
-        </div>
-        <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
-          <div style="font-family:var(--mono);font-size:9px;color:var(--text3)">CAPITAL DEPLOYED</div>
-          <div class="ti-big" id="tiDeployed" style="font-size:16px;margin-top:2px;">—</div>
-        </div>
-      </div>
-
-      <!-- Card 3: Kelly Analysis -->
-      <div class="ti-card">
-        <div class="ti-card-title"><i class="fas fa-calculator"></i> Kelly Analysis</div>
-        <div class="ti-sub" style="margin-bottom:8px">At 70% win rate · 2%TP / 4%SL</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-          <div>
-            <div style="font-family:var(--mono);font-size:8px;color:var(--text3)">FULL KELLY</div>
-            <div class="ti-big" id="tiFullKelly" style="font-size:15px;color:var(--bear)">—</div>
+      <!-- Correlation Rule — full width below -->
+      <div class="ti-card" style="margin-top:6px;">
+        <div style="display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap;">
+          <!-- Left: rule summary -->
+          <div style="flex-shrink:0;min-width:220px;">
+            <div class="ti-card-title"><i class="fas fa-link"></i> Correlation Rule</div>
+            <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px;">
+              <div class="ti-big" style="font-size:20px;color:var(--bull);">Max 2</div>
+              <div class="ti-sub">stocks per sector simultaneously</div>
+            </div>
+            <div class="ti-sub">
+              Holding HDFCBANK + ICICIBANK + AXISBANK = 1 bet, not 3.<br>
+              Take the highest scored stock per sector only.
+            </div>
           </div>
-          <div>
-            <div style="font-family:var(--mono);font-size:8px;color:var(--text3)">HALF KELLY ✓</div>
-            <div class="ti-big" id="tiHalfKelly" style="font-size:15px;color:var(--bull)">—</div>
-          </div>
+          <!-- Right: live warnings — wraps into 2-4 rows as needed -->
+          <div id="tiCorrWarnings" style="flex:1;display:flex;flex-wrap:wrap;gap:5px;align-content:flex-start;"></div>
         </div>
-        <div class="ti-sub" id="tiKellyMsg" style="margin-top:6px;"></div>
-      </div>
-
-      <!-- Card 4: Compounding Tracker -->
-      <div class="ti-card">
-        <div class="ti-card-title"><i class="fas fa-chart-line"></i> Compounding Projection</div>
-        <div class="ti-sub" style="margin-bottom:6px">At current Rs.25k/trade · 70% win rate</div>
-        <div style="display:flex;flex-direction:column;gap:4px;" id="tiCompound">
-          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;">
-            <span style="color:var(--text3)">6 months</span>
-            <span id="ti6m" style="font-weight:700;color:var(--bull)">—</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;">
-            <span style="color:var(--text3)">1 year</span>
-            <span id="ti1y" style="font-weight:700;color:var(--bull)">—</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;">
-            <span style="color:var(--text3)">3 years</span>
-            <span id="ti3y" style="font-weight:700;color:var(--bull)">—</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;">
-            <span style="color:var(--text3)">5 years</span>
-            <span id="ti5y" style="font-weight:700;color:var(--amber)">—</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 5: Time Stop Rule -->
-      <div class="ti-card">
-        <div class="ti-card-title"><i class="fas fa-clock"></i> Time Stop Rule</div>
-        <div class="ti-big" style="font-size:16px;color:var(--amber)">3 Days</div>
-        <div class="ti-sub" style="margin-top:4px;">
-          If position has NOT moved +1% in 3 trading days after entry → EXIT regardless of GTT<br><br>
-          Genuine B2/B1-OS signals move within 1-3 days.<br>
-          Non-movement = signal was wrong = free capital for next opportunity.
-        </div>
-      </div>
-
-      <!-- Card 6: Correlation Rule -->
-      <div class="ti-card">
-        <div class="ti-card-title"><i class="fas fa-link"></i> Correlation Rule</div>
-        <div class="ti-big" style="font-size:16px;color:var(--bull)">Max 2</div>
-        <div class="ti-sub" style="margin-top:4px;">
-          Maximum 2 stocks from the same sector simultaneously.<br><br>
-          Holding HDFCBANK + ICICIBANK + AXISBANK = 1 bet, not 3.<br>
-          Take the highest scored stock per sector only.
-        </div>
-        <div id="tiCorrWarnings" style="margin-top:8px;"></div>
       </div>
 
     </div>
