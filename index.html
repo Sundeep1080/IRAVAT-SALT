@@ -1622,6 +1622,148 @@ body::before {
   
   .sb-grid      { grid-template-columns: 1fr 1fr; }
 }
+
+/* ── Signal History Column ── */
+.hist-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 90px;
+}
+.hist-counts {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.hist-b { background: rgba(5,150,105,0.12); color: var(--bull); border: 1px solid rgba(5,150,105,0.3);
+          font-family: var(--mono); font-size: 10px; font-weight: 700;
+          padding: 1px 6px; border-radius: 10px; white-space: nowrap; }
+.hist-s { background: rgba(220,38,38,0.10); color: var(--bear); border: 1px solid rgba(220,38,38,0.3);
+          font-family: var(--mono); font-size: 10px; font-weight: 700;
+          padding: 1px 6px; border-radius: 10px; white-space: nowrap; }
+.hist-e { background: rgba(234,88,12,0.09); color: var(--exit); border: 1px solid rgba(234,88,12,0.25);
+          font-family: var(--mono); font-size: 10px; font-weight: 700;
+          padding: 1px 6px; border-radius: 10px; white-space: nowrap; }
+.hist-reliable { background: rgba(99,102,241,0.10); color: #6366f1; border: 1px solid rgba(99,102,241,0.3);
+                 font-family: var(--mono); font-size: 9px; font-weight: 700;
+                 padding: 1px 6px; border-radius: 10px; }
+.hist-new { background: rgba(245,158,11,0.10); color: var(--amber); border: 1px solid rgba(245,158,11,0.3);
+            font-family: var(--mono); font-size: 9px; font-weight: 700;
+            padding: 1px 6px; border-radius: 10px; }
+.hist-view-btn {
+  font-family: var(--mono); font-size: 9px; color: var(--text3);
+  cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
+  background: none; border: none; padding: 0; text-align: left;
+}
+.hist-view-btn:hover { color: var(--amber); }
+
+/* ── Signal History Modal ── */
+.hist-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+.hist-modal-overlay.open { display: flex; }
+.hist-modal {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 680px;
+  max-width: 96vw;
+  max-height: 85vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.hist-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg3);
+}
+.hist-modal-title {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--bright);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hist-modal-close {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--border);
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text2);
+  display: grid; place-items: center;
+  transition: background 0.15s;
+}
+.hist-modal-close:hover { background: var(--border2); color: var(--bright); }
+.hist-modal-body { padding: 16px 18px; overflow-y: auto; flex: 1; }
+.hist-summary-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.hist-sum-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 14px;
+  text-align: center;
+  min-width: 80px;
+}
+.hist-sum-num {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+}
+.hist-sum-lbl {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+.hist-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.hist-tl-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+.hist-tl-row:last-child { border-bottom: none; }
+.hist-tl-date { color: var(--text3); width: 80px; flex-shrink: 0; }
+.hist-tl-sig  { font-weight: 700; width: 70px; flex-shrink: 0; }
+.hist-tl-price { color: var(--text2); width: 70px; flex-shrink: 0; }
+.hist-tl-score { color: var(--text3); width: 50px; flex-shrink: 0; }
+.hist-tl-zone { color: var(--text3); font-size: 10px; }
+.hist-tl-today {
+  background: rgba(217,119,6,0.06);
+  border-left: 3px solid var(--amber) !important;
+  padding-left: 5px;
+}
+
 </style>
 </head>
 <body>
@@ -2174,6 +2316,7 @@ body::before {
             <th onclick="sortBy('index')">Index</th>
             <th onclick="sortBy('sector')">Sector</th>
             <th onclick="sortBy('symbol')">Symbol</th>
+            <th>Signal History</th>
             <th onclick="sortBy('signal')">Signal</th>
             <th>HMA 9/10 · Weekly</th>
             <th>SMI 10,3,3</th>
@@ -2188,7 +2331,7 @@ body::before {
         </thead>
         <tbody id="tbody">
           <tr>
-            <td colspan="15">
+            <td colspan="16">
               <div class="empty-state">
                 <i class="fas fa-chart-candlestick"></i>
                 <h3>No data loaded</h3>
@@ -2601,31 +2744,54 @@ function detectSALT(hma9arr, hma10arr, smiArr, smiSigArr, bandZone, p) {
   const xUp = c9 > c10 && p9 <= p10;
   const xDn = c9 < c10 && p9 >= p10;
 
-  // Buy zone = B1/B2 REJ lower OR below VA
   const isBuyZone  = bandZone === 'rej_lo' || bandZone === 'below_va';
-  // Sell zone = B10 REJ upper OR above VA
   const isSellZone = bandZone === 'rej_hi' || bandZone === 'above_va';
-  // Fair value = inside VA
-  const isVA       = bandZone === 'va';
 
-  // ── BUY SIGNALS ──
   if (d9 > 0 && pd9 < 0 && cSMI < -20 && cSIG < -20 && isBuyZone)  return 'B1-OS';
   if (d9 > 0 && pd9 < 0 && cSMI >  25 && cSIG >  25 && isBuyZone)  return 'B1-MOM';
   if (xUp && d10 > 0 && cSMI < -20 && cSIG < -20 && !isSellZone)   return 'B2';
   if (d9 > 0 && d10 > 0 && cSMI > -10 && cSIG > -10 && !isSellZone) return 'B3';
-
-  // ── SELL SIGNALS ──
   if (d9 < 0 && pd9 > 0 && cSMI >  20 && cSIG >  20 && isSellZone) return 'S1-OB';
   if (d9 < 0 && pd9 > 0 && cSMI < -25 && cSIG < -25 && isSellZone) return 'S1-MOM';
   if (xDn && d10 < 0 && cSMI > 20 && cSIG > 20 && !isBuyZone)      return 'S2';
   if (d9 < 0 && d10 < 0 && cSMI < 10 && cSIG < 10 && !isBuyZone)   return 'S3';
+  if (d9 > 0 && pd9 < 0 && d10 > 0)                                 return 'HSE';
+  if (d9 > 0.5 && d10 > 0.5 && (cSMI > 25 || cSIG > 25))           return 'SE';
+  if (d9 < 0 && pd9 > 0 && d10 < 0)                                 return 'HLE';
+  if (d9 < -0.5 && d10 < -0.5 && (cSMI < -25 || cSIG < -25))       return 'LE';
+  return 'WAIT';
+}
 
-  // ── EXIT SIGNALS ──
-  if (d9 > 0 && pd9 < 0 && d10 > 0)                         return 'HSE';
-  if (d9 > 0.5 && d10 > 0.5 && (cSMI > 25 || cSIG > 25))   return 'SE';
-  if (d9 < 0 && pd9 > 0 && d10 < 0)                         return 'HLE';
-  if (d9 < -0.5 && d10 < -0.5 && (cSMI < -25 || cSIG < -25)) return 'LE';
-
+/* detectSALT_at — same logic but evaluated at a specific bar index */
+function detectSALT_at(h9, h10, smi, smiSig, bandZone, p, atBar) {
+  // Collect 3 valid HMA9 values ending at atBar
+  const v9 = [], vi = [];
+  for (let i = atBar; i >= 0 && v9.length < 3; i--) {
+    if (h9[i] !== null && !isNaN(h9[i])) { v9.unshift(h9[i]); vi.unshift(i); }
+  }
+  if (v9.length < 3) return 'WAIT';
+  const [pp9, p9, c9] = v9;
+  const [ppI, pI, cI] = vi;
+  const p10 = h10[pI], c10 = h10[cI];
+  if (p10 === null || c10 === null) return 'WAIT';
+  const cSMI = smi[cI] ?? 0;
+  const cSIG = smiSig[cI] ?? 0;
+  const d9 = c9-p9, pd9 = p9-pp9, d10 = c10-p10;
+  const xUp = c9>c10 && p9<=p10, xDn = c9<c10 && p9>=p10;
+  const isBZ = bandZone==='rej_lo'||bandZone==='below_va';
+  const isSZ = bandZone==='rej_hi'||bandZone==='above_va';
+  if (d9>0&&pd9<0&&cSMI<-20&&cSIG<-20&&isBZ) return 'B1-OS';
+  if (d9>0&&pd9<0&&cSMI>25&&cSIG>25&&isBZ)   return 'B1-MOM';
+  if (xUp&&d10>0&&cSMI<-20&&cSIG<-20&&!isSZ) return 'B2';
+  if (d9>0&&d10>0&&cSMI>-10&&cSIG>-10&&!isSZ) return 'B3';
+  if (d9<0&&pd9>0&&cSMI>20&&cSIG>20&&isSZ)   return 'S1-OB';
+  if (d9<0&&pd9>0&&cSMI<-25&&cSIG<-25&&isSZ) return 'S1-MOM';
+  if (xDn&&d10<0&&cSMI>20&&cSIG>20&&!isBZ)   return 'S2';
+  if (d9<0&&d10<0&&cSMI<10&&cSIG<10&&!isBZ)  return 'S3';
+  if (d9>0&&pd9<0&&d10>0)                     return 'HSE';
+  if (d9>0.5&&d10>0.5&&(cSMI>25||cSIG>25))   return 'SE';
+  if (d9<0&&pd9>0&&d10<0)                     return 'HLE';
+  if (d9<-0.5&&d10<-0.5&&(cSMI<-25||cSIG<-25)) return 'LE';
   return 'WAIT';
 }
 
@@ -2963,6 +3129,166 @@ function calcScore(sig, bandZone, barsAgo, weeklyTrend, rr) {
 /* ───────────────────────────────────────────────
    PROCESS SINGLE STOCK
 ─────────────────────────────────────────────── */
+/* ───────────────────────────────────────────────
+   SIGNAL HISTORY — scan all bars for this stock
+   Returns: { buys, sells, exits, timeline, reliable }
+─────────────────────────────────────────────── */
+function calcSignalHistory(sym, info, p, currentSig) {
+  const rows   = info.rows;
+  const closes = rows.map(r => r.cl);
+  const highs  = rows.map(r => r.hi);
+  const lows   = rows.map(r => r.lo);
+  const n      = closes.length;
+
+  const h9  = calcHMA(closes, p.hmaFast);
+  const h10 = calcHMA(closes, p.hmaSlow);
+  const smd = calcSMI(highs, lows, closes, p.smiK, 3, 3);
+  const bd  = calcBands(closes, p.zoneLB);
+  if (!bd) return null;
+
+  const timeline = [];
+  let buys = 0, sells = 0, exits = 0;
+  let currentSigCount = 0;  // how many times current signal type fired
+
+  // Scan every bar from oldest to newest
+  for (let i = Math.max(20, p.hmaFast + 5); i < n; i++) {
+    // Calculate band zone at this bar using closes up to bar i
+    const closesUpTo = closes.slice(0, i + 1);
+    const bdAt = calcBands(closesUpTo, Math.min(p.zoneLB, closesUpTo.length));
+    const zoneAt = bdAt ? bdAt.bandZone : 'va';
+
+    const sig = detectSALT_at(h9, h10, smd.smi, smd.smiSig, zoneAt, p, i);
+    if (!sig || sig === 'WAIT') continue;
+
+    const type = sig.startsWith('B') ? 'buy'
+               : sig.startsWith('S') ? 'sell'
+               : ['HLE','LE','HSE','SE'].includes(sig) ? 'exit' : null;
+    if (!type) continue;
+
+    const sc = calcScore(sig, bd.bandZone, 0, 'neut', null);
+    const isToday = (i === n - 1);
+
+    timeline.push({
+      bar:   i,
+      date:  rows[i].dt,
+      sig,
+      type,
+      price: Math.round(rows[i].cl * 100) / 100,
+      score: sc,
+      isToday,
+    });
+
+    if (type === 'buy')  buys++;
+    if (type === 'sell') sells++;
+    if (type === 'exit') exits++;
+
+    // Count how many times the exact current signal type fired
+    const curType = currentSig.startsWith('B') ? 'buy'
+                  : currentSig.startsWith('S') ? 'sell' : 'exit';
+    if (type === curType) currentSigCount++;
+  }
+
+  // Reliability: current signal type fired 3+ times = reliable pattern
+  const reliable = currentSigCount >= 3;
+
+  return {
+    buys, sells, exits,
+    total: timeline.length,
+    timeline: timeline.reverse(), // newest first for display
+    reliable,
+    currentSigCount,
+  };
+}
+
+/* Modal open/close */
+function openHistModal(sym) {
+  const info = uploadedParsed?.[sym];
+  if (!info) return;
+
+  const p = {
+    minDays: parseInt(document.getElementById('p_minDays').value) || 60,
+    hmaFast: parseInt(document.getElementById('p_hmaFast').value) || 9,
+    hmaSlow: parseInt(document.getElementById('p_hmaSlow').value) || 10,
+    smiK:    parseInt(document.getElementById('p_smiK').value)    || 10,
+    smiBull: parseInt(document.getElementById('p_smiBull').value) || 40,
+    smiBear: parseInt(document.getElementById('p_smiBear').value) || -40,
+    zoneLB:  parseInt(document.getElementById('p_zoneLB').value)  || 100,
+  };
+
+  // Get current signal for this stock from allSignals
+  const sigData = allSignals.find(s => s.symbol === sym);
+  const currentSig = sigData?.signal || 'WAIT';
+
+  const hist = calcSignalHistory(sym, info, p, currentSig);
+  if (!hist) { toast('No history data', 'warn'); return; }
+
+  // Set title
+  document.getElementById('histModalTitle').innerHTML =
+    `<i class="fas fa-clock-rotate-left" style="color:var(--amber)"></i>
+     ${sym} — Signal History (${info.rows.length} days)`;
+
+  // Summary cards
+  const sumRow = document.getElementById('histSummaryRow');
+  sumRow.innerHTML = `
+    <div class="hist-sum-card">
+      <div class="hist-sum-num" style="color:var(--bull)">${hist.buys}</div>
+      <div class="hist-sum-lbl">▲ Buy Signals</div>
+    </div>
+    <div class="hist-sum-card">
+      <div class="hist-sum-num" style="color:var(--bear)">${hist.sells}</div>
+      <div class="hist-sum-lbl">▼ Sell Signals</div>
+    </div>
+    <div class="hist-sum-card">
+      <div class="hist-sum-num" style="color:var(--exit)">${hist.exits}</div>
+      <div class="hist-sum-lbl">↔ Exit Signals</div>
+    </div>
+    <div class="hist-sum-card">
+      <div class="hist-sum-num" style="color:var(--text)">${hist.total}</div>
+      <div class="hist-sum-lbl">Total Signals</div>
+    </div>
+    <div class="hist-sum-card">
+      <div class="hist-sum-num" style="color:${hist.reliable ? '#6366f1' : 'var(--amber)'}">
+        ${hist.reliable ? '⭐' : '🆕'}
+      </div>
+      <div class="hist-sum-lbl">${hist.reliable ? 'Reliable' : 'New Pattern'}</div>
+    </div>`;
+
+  // Timeline
+  const tl = document.getElementById('histTimeline');
+  if (!hist.timeline.length) {
+    tl.innerHTML = '<div style="font-family:var(--mono);font-size:11px;color:var(--text3);padding:8px 0;">No signals found in history</div>';
+  } else {
+    const SIG_COLORS = {
+      buy: 'var(--bull)', sell: 'var(--bear)', exit: 'var(--exit)'
+    };
+    tl.innerHTML = hist.timeline.map(e => {
+      const col = SIG_COLORS[e.type] || 'var(--text)';
+      const dateStr = e.date instanceof Date
+        ? e.date.toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'2-digit'})
+        : String(e.date).slice(0,10);
+      const todayTag = e.isToday
+        ? '<span style="font-family:var(--mono);font-size:9px;background:rgba(217,119,6,0.15);color:var(--amber);padding:1px 6px;border-radius:8px;margin-left:4px;">TODAY</span>'
+        : '';
+      return `<div class="hist-tl-row${e.isToday ? ' hist-tl-today' : ''}">
+        <span class="hist-tl-date">${dateStr}</span>
+        <span class="hist-tl-sig" style="color:${col}">${e.sig}</span>
+        <span class="hist-tl-price">₹${e.price.toLocaleString('en-IN')}</span>
+        <span class="hist-tl-score">Sc:${e.score}</span>
+        ${todayTag}
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('histModal').classList.add('open');
+}
+
+function closeHistModal() {
+  document.getElementById('histModal').classList.remove('open');
+}
+
+/* ───────────────────────────────────────────────
+   PROCESS STOCK — runs all calculations
+─────────────────────────────────────────────── */
 function processStock(sym, info, p) {
   const minDays = p.minDays;
   if (!info || info.rows.length < minDays) return null;
@@ -3020,6 +3346,9 @@ function processStock(sym, info, p) {
                           (sig.startsWith('S') && weeklyTrend === 'bear');
     const actionTag = calcActionTag(sig, score, bd.bandZone, weeklyAligned, weeklyTrend);
 
+    // Signal history — scan all bars
+    const history = calcSignalHistory(sym, info, p, sig);
+
     return {
       symbol: sym, index: info.index, sector: info.sector,
       signal: sig, type,
@@ -3031,6 +3360,7 @@ function processStock(sym, info, p) {
       bands: bd, spreads: sprd, atr: Math.round(atr * 100) / 100,
       weeklyTrend, weeklyAligned, barsAgo, score,
       actionTag, actionRank: actionTag.rank,
+      history,
     };
 
   } catch (e) {
@@ -3786,7 +4116,7 @@ function renderTable(signals) {
 
   if (!signals.length) {
     tbody.innerHTML = `
-      <tr><td colspan="15">
+      <tr><td colspan="16">
         <div class="empty-state">
           <i class="fas fa-magnifying-glass"></i>
           <h3>No signals match filters</h3>
@@ -3851,12 +4181,30 @@ function renderTable(signals) {
     const actionCell = `<div class="action-tag ${at.cls}">${at.tag}</div>
       <div class="action-sub">${at.sub}</div>`;
 
+    // History cell
+    const h = s.history;
+    const histCell = h ? `
+      <div class="hist-cell">
+        <div class="hist-counts">
+          ${h.buys  > 0 ? `<span class="hist-b">▲${h.buys}</span>` : ''}
+          ${h.sells > 0 ? `<span class="hist-s">▼${h.sells}</span>` : ''}
+          ${h.exits > 0 ? `<span class="hist-e">↔${h.exits}</span>` : ''}
+          ${h.reliable
+            ? `<span class="hist-reliable">⭐ ×${h.currentSigCount}</span>`
+            : `<span class="hist-new">🆕 1st</span>`}
+        </div>
+        <button class="hist-view-btn" onclick="event.stopPropagation();openHistModal('${s.symbol}')">
+          📅 view timeline
+        </button>
+      </div>` : '<span style="font-family:var(--mono);font-size:9px;color:var(--text3)">—</span>';
+
     tr.innerHTML = `
       <td style="text-align:center">${scoreCell}${freshBadge}</td>
       <td style="text-align:center;min-width:120px">${actionCell}</td>
       <td class="idx-cell">${s.index}</td>
       <td><span class="sec-tag" title="${s.sector}">${s.sector}</span></td>
       <td class="sym-cell">${s.symbol}</td>
+      <td>${histCell}</td>
       <td>
         <span class="sig ${sigClass(s.signal)}">${s.signal}</span>
         <div class="sig-desc">${SIG_DESCS[s.signal] || ''}</div>
@@ -4106,7 +4454,7 @@ function clearAll() {
   const badge = document.getElementById('advDecModeBadge');
   if (badge) badge.textContent = 'ALL';
   document.getElementById('tbody').innerHTML = `
-    <tr><td colspan="15">
+    <tr><td colspan="16">
       <div class="empty-state">
         <i class="fas fa-chart-candlestick"></i>
         <h3>No data loaded</h3>
@@ -4127,5 +4475,27 @@ document.addEventListener('DOMContentLoaded', () => {
   toast('Select a CSV file or paste CSV text, then click Generate Signals', 'info');
 });
 </script>
+
+<!-- ── Signal History Modal ── -->
+<div class="hist-modal-overlay" id="histModal" onclick="if(event.target===this)closeHistModal()">
+  <div class="hist-modal">
+    <div class="hist-modal-header">
+      <div class="hist-modal-title">
+        <i class="fas fa-clock-rotate-left" style="color:var(--amber)"></i>
+        <span id="histModalTitle">Signal History</span>
+      </div>
+      <button class="hist-modal-close" onclick="closeHistModal()">✕</button>
+    </div>
+    <div class="hist-modal-body">
+      <div class="hist-summary-row" id="histSummaryRow"></div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);
+                  margin-bottom:8px;letter-spacing:0.5px;text-transform:uppercase;">
+        Full 100-Day Signal Log (most recent first)
+      </div>
+      <div class="hist-timeline" id="histTimeline"></div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
