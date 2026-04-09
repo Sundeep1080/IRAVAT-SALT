@@ -4087,8 +4087,16 @@ function buildSectorBreadth() {
     grid.appendChild(card);
   });
 
-  document.getElementById('sectorPanel').classList.add('open');
+  // Only auto-open on first scan — respect user's collapsed state on re-runs
+  const sp = document.getElementById('sectorPanel');
+  if (sp && !sp.dataset.userToggled) sp.classList.add('open');
 }
+
+// Track user manual toggles on sector panel — so re-scans don't force it open again
+document.addEventListener('DOMContentLoaded', () => {
+  const sp = document.getElementById('sectorPanel');
+  if (sp) sp.addEventListener('click', () => { sp.dataset.userToggled = '1'; });
+});
 
 function clearSectorFilter() {
   document.querySelectorAll('.sb-card').forEach(c => c.classList.remove('active'));
@@ -4194,8 +4202,9 @@ function buildSignalAnalytics() {
       <div onclick="(function(el){
               var b=el.parentElement.querySelector('.sa-body');
               var ch=el.querySelector('.sa-chev');
-              b.style.display=b.style.display==='none'?'block':'none';
-              ch.style.transform=b.style.display==='none'?'rotate(-90deg)':'rotate(0deg)';
+              var isOpen=b.style.display!=='none';
+              b.style.display=isOpen?'none':'block';
+              ch.style.transform=isOpen?'rotate(-90deg)':'rotate(0deg)';
             })(this)"
            style="display:flex;align-items:center;justify-content:space-between;
                   padding:8px 12px;cursor:pointer;background:var(--bg3);
@@ -4204,10 +4213,13 @@ function buildSignalAnalytics() {
                      letter-spacing:1px;text-transform:uppercase;display:flex;align-items:center;gap:6px;">
           <i class="${icon}" style="color:var(--amber);"></i>${title}
         </span>
-        <i class="fas fa-chevron-down sa-chev" style="color:var(--text3);font-size:10px;
-           transition:transform 0.2s;"></i>
+        <span style="display:flex;align-items:center;gap:8px;">
+          <span style="font-family:var(--mono);font-size:9px;color:var(--text3);">click to expand</span>
+          <i class="fas fa-chevron-right sa-chev" style="color:var(--amber);font-size:10px;
+             transition:transform 0.2s;"></i>
+        </span>
       </div>
-      <div class="sa-body" style="display:block;padding:10px 12px 8px;">
+      <div class="sa-body" style="display:none;padding:10px 12px 8px;">
         <table class="sa-table">${tableHtml}</table>
         <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;">${noteHtml}</div>
       </div>
