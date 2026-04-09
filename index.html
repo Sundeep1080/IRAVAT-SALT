@@ -987,6 +987,9 @@ body::before {
 .pl-loss { display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;
            font-family:var(--mono);font-size:9px;font-weight:700;
            background:rgba(220,38,38,0.10);color:#b91c1c;border:1px solid rgba(220,38,38,0.25); }
+.pl-early{ display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;
+           font-family:var(--mono);font-size:9px;font-weight:700;
+           background:rgba(234,88,12,0.09);color:var(--exit);border:1px solid rgba(234,88,12,0.25); }
 .pl-open { display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;
            font-family:var(--mono);font-size:9px;font-weight:700;
            background:rgba(217,119,6,0.09);color:var(--amber);border:1px solid rgba(217,119,6,0.25); }
@@ -3237,6 +3240,11 @@ function calcScore(sig, bandZone, barsAgo, weeklyTrend, rr) {
    SIGNAL HISTORY — scan all bars for this stock
    Returns: { buys, sells, exits, timeline, reliable }
 ─────────────────────────────────────────────── */
+/* ───────────────────────────────────────────────
+   SIGNAL HISTORY — scan all bars for this stock
+   Returns split buy/sell P/L stats + timeline
+   P/L scan stops at next signal (not end of data)
+─────────────────────────────────────────────── */
 function calcSignalHistory(sym, info, p, currentSig) {
   const rows   = info.rows;
   const closes = rows.map(r => r.cl);
@@ -3250,59 +3258,64 @@ function calcSignalHistory(sym, info, p, currentSig) {
   const bd  = calcBands(closes, p.zoneLB);
   if (!bd) return null;
 
-  const timeline = [];
-  let buys = 0, sells = 0, exits = 0;
-  let currentSigCount = 0;
-
-  // Scan every bar from oldest to newest
+  // ── PASS 1: collect every signal bar in order ──
+  const allSigBars = [];
   for (let i = Math.max(20, p.hmaFast + 5); i < n; i++) {
     const closesUpTo = closes.slice(0, i + 1);
-    const bdAt = calcBands(closesUpTo, Math.min(p.zoneLB, closesUpTo.length));
-    const zoneAt = bdAt ? bdAt.bandZone : 'va';
-
-    const sig = detectSALT_at(h9, h10, smd.smi, smd.smiSig, zoneAt, p, i);
+    const bdAt  = calcBands(closesUpTo, Math.min(p.zoneLB, closesUpTo.length));
+    const zone  = bdAt ? bdAt.bandZone : 'va';
+    const sig   = detectSALT_at(h9, h10, smd.smi, smd.smiSig, zone, p, i);
     if (!sig || sig === 'WAIT') continue;
-
-    const type = sig.startsWith('B') ? 'buy'
-               : sig.startsWith('S') ? 'sell'
-               : ['HLE','LE','HSE','SE'].includes(sig) ? 'exit' : null;
+    const type  = sig.startsWith('B') ? 'buy'
+                : sig.startsWith('S') ? 'sell'
+                : ['HLE','LE','HSE','SE'].includes(sig) ? 'exit' : null;
     if (!type) continue;
+    allSigBars.push({ bar: i, sig, type });
+  }
 
-    const sc = calcScore(sig, bd.bandZone, 0, 'neut', null);
-    const isToday = (i === n - 1);
-    const entryPrice = rows[i].cl;
+  // ── PASS 2: resolve P/L for each signal ──
+  const TP = 0.02, SL = 0.04;
+  const timeline = [];
+  let buys = 0, sells = 0, exits = 0, currentSigCount = 0;
 
-    // P/L outcome: look forward using High/Low (more realistic)
-    let outcome = 'open'; // default for most-recent bar
+  for (let k = 0; k < allSigBars.length; k++) {
+    const { bar: i, sig, type } = allSigBars[k];
+    const nextSigBar = k + 1 < allSigBars.length ? allSigBars[k + 1].bar : n;
+    const isToday    = (i === n - 1);
+    const entry      = rows[i].cl;
+    const sc         = calcScore(sig, bd.bandZone, 0, 'neut', null);
+
+    let outcome = 'open';
+
     if (!isToday && (type === 'buy' || type === 'sell')) {
-      const tpPct = 0.02;  // 2% take-profit
-      const slPct = 0.04;  // 4% stop-loss
-      for (let j = i + 1; j < n; j++) {
+      outerLoop:
+      for (let j = i + 1; j < nextSigBar; j++) {
         if (type === 'buy') {
-          const hitTP = highs[j] >= entryPrice * (1 + tpPct);
-          const hitSL = lows[j]  <= entryPrice * (1 - slPct);
-          if (hitTP && hitSL) { outcome = 'win'; break; } // same bar — conservative: SL wins
-          if (hitTP)          { outcome = 'win';  break; }
-          if (hitSL)          { outcome = 'loss'; break; }
-        } else { // sell
-          const hitTP = lows[j]  <= entryPrice * (1 - tpPct);
-          const hitSL = highs[j] >= entryPrice * (1 + slPct);
-          if (hitTP && hitSL) { outcome = 'loss'; break; }
-          if (hitTP)          { outcome = 'win';  break; }
-          if (hitSL)          { outcome = 'loss'; break; }
+          const hitTP = highs[j] >= entry * (1 + TP);
+          const hitSL = lows[j]  <= entry * (1 - SL);
+          // Same-bar conflict: conservative — SL wins
+          if (hitTP && hitSL) { outcome = 'loss';  break outerLoop; }
+          if (hitTP)          { outcome = 'win';   break outerLoop; }
+          if (hitSL)          { outcome = 'loss';  break outerLoop; }
+        } else {
+          const hitTP = lows[j]  <= entry * (1 - TP);
+          const hitSL = highs[j] >= entry * (1 + SL);
+          if (hitTP && hitSL) { outcome = 'loss';  break outerLoop; }
+          if (hitTP)          { outcome = 'win';   break outerLoop; }
+          if (hitSL)          { outcome = 'loss';  break outerLoop; }
         }
       }
-      // If we scanned to end without hitting either — still open/unresolved
-      if (outcome === 'open') outcome = 'na'; // data ended before resolution
+      // Survived to next signal without hitting TP or SL
+      if (outcome === 'open') {
+        outcome = (k + 1 < allSigBars.length) ? 'early_exit' : 'na';
+      }
     } else if (type === 'exit') {
       outcome = 'na';
     }
 
-    timeline.push({
-      bar: i, date: rows[i].dt, sig, type,
-      price: Math.round(entryPrice * 100) / 100,
-      score: sc, isToday, outcome,
-    });
+    timeline.push({ bar: i, date: rows[i].dt, sig, type,
+                    price: Math.round(entry * 100) / 100,
+                    score: sc, isToday, outcome });
 
     if (type === 'buy')  buys++;
     if (type === 'sell') sells++;
@@ -3315,21 +3328,36 @@ function calcSignalHistory(sym, info, p, currentSig) {
 
   const reliable = currentSigCount >= 3;
 
-  // P/L stats (only buy/sell signals)
-  const tradeable = timeline.filter(e => e.type === 'buy' || e.type === 'sell');
-  const wins  = tradeable.filter(e => e.outcome === 'win').length;
-  const losses= tradeable.filter(e => e.outcome === 'loss').length;
-  const open  = tradeable.filter(e => e.outcome === 'open').length;
-  const na    = tradeable.filter(e => e.outcome === 'na').length;
-  const resolved = wins + losses;
-  const winRate = resolved > 0 ? Math.round(wins / resolved * 100) : null;
+  // ── Split stats helper ──
+  function sideStats(trades) {
+    const wins  = trades.filter(e => e.outcome === 'win').length;
+    const losses= trades.filter(e => e.outcome === 'loss').length;
+    const early = trades.filter(e => e.outcome === 'early_exit').length;
+    const open  = trades.filter(e => e.outcome === 'open').length;
+    const resolved = wins + losses;
+    const winRate  = resolved >= 3 ? Math.round(wins / resolved * 100) : null;
+    return { wins, losses, early, open, resolved, winRate };
+  }
+
+  const buyStats  = sideStats(timeline.filter(e => e.type === 'buy'));
+  const sellStats = sideStats(timeline.filter(e => e.type === 'sell'));
+
+  // Combined (for backward compat)
+  const allTrades  = timeline.filter(e => e.type === 'buy' || e.type === 'sell');
+  const plWins     = buyStats.wins  + sellStats.wins;
+  const plLosses   = buyStats.losses + sellStats.losses;
+  const plEarly    = buyStats.early  + sellStats.early;
+  const plOpen     = buyStats.open   + sellStats.open;
+  const plResolved = plWins + plLosses;
+  const winRate    = plResolved >= 3 ? Math.round(plWins / plResolved * 100) : null;
 
   return {
     buys, sells, exits,
     total: timeline.length,
     timeline: timeline.reverse(),
     reliable, currentSigCount,
-    plWins: wins, plLosses: losses, plOpen: open, plNa: na,
+    buyStats, sellStats,
+    plWins, plLosses, plEarly, plOpen,
     winRate,
   };
 }
@@ -3387,35 +3415,45 @@ function openHistModal(sym) {
       <div class="hist-sum-lbl">${hist.reliable ? 'Reliable' : 'New Pattern'}</div>
     </div>`;
 
-  // P/L summary bar
+  // P/L summary bar — split buy / sell
   const tl = document.getElementById('histTimeline');
-  const wrCls = hist.winRate === null ? '' : hist.winRate >= 60 ? 'wr-good' : hist.winRate >= 45 ? 'wr-ok' : 'wr-bad';
-  const wrTxt = hist.winRate !== null ? hist.winRate + '%' : 'N/A';
+
+  const renderSideSummary = (label, stats, col) => {
+    if (!stats || stats.wins + stats.losses + stats.early === 0) return '';
+    const wrCls = stats.winRate === null ? '' : stats.winRate >= 60 ? 'wr-good' : stats.winRate >= 45 ? 'wr-ok' : 'wr-bad';
+    const wrTxt = stats.winRate !== null ? stats.winRate + '%' : 'N/A';
+    return `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;
+                  border-radius:6px;background:var(--bg3);border:1px solid var(--border);">
+      <span style="font-family:var(--mono);font-size:10px;font-weight:700;color:${col}">${label}</span>
+      <span class="pl-sum-win">✓${stats.wins}</span>
+      <span class="pl-sum-loss">✗${stats.losses}</span>
+      ${stats.early > 0 ? `<span style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--exit)">↩${stats.early}</span>` : ''}
+      <span class="pl-sum-wr ${wrCls}">WR ${wrTxt}</span>
+      <span style="color:var(--text3);font-size:9px;">(${stats.wins+stats.losses} resolved)</span>
+    </span>`;
+  };
+
   const plBarHtml = `
     <div class="pl-summary-bar">
-      <span style="color:var(--text2);font-weight:600;">P/L&nbsp;(2%TP / 4%SL)</span>
-      <span class="pl-sum-win">✓ WIN: ${hist.plWins}</span>
-      <span style="color:var(--border2)">|</span>
-      <span class="pl-sum-loss">✗ LOSS: ${hist.plLosses}</span>
-      <span style="color:var(--border2)">|</span>
-      <span class="pl-sum-open">⏳ OPEN: ${hist.plOpen}</span>
-      <span style="color:var(--border2)">|</span>
-      <span class="pl-sum-wr ${wrCls}">WR: ${wrTxt}</span>
-      ${hist.winRate !== null ? `<span style="color:var(--text3);font-size:10px;">(${hist.plWins+hist.plLosses} resolved)</span>` : ''}
+      <span style="color:var(--text2);font-weight:700;font-family:var(--mono);font-size:10px;
+                   letter-spacing:1px;text-transform:uppercase;">P/L · 2%TP / 4%SL · stops at next signal</span>
+      ${renderSideSummary('▲ BUY',  hist.buyStats,  'var(--bull)')}
+      ${renderSideSummary('▼ SELL', hist.sellStats, 'var(--bear)')}
+      ${(hist.plOpen > 0) ? `<span class="pl-open" style="font-size:10px;">⏳ Open: ${hist.plOpen}</span>` : ''}
     </div>`;
+
+  const plBadge = (outcome) => {
+    if (outcome === 'win')        return '<span class="pl-win">✓ WIN +2%</span>';
+    if (outcome === 'loss')       return '<span class="pl-loss">✗ LOSS −4%</span>';
+    if (outcome === 'early_exit') return '<span class="pl-early">↩ EXIT @ next sig</span>';
+    if (outcome === 'open')       return '<span class="pl-open">⏳ OPEN</span>';
+    return '<span class="pl-na">— N/A</span>';
+  };
 
   if (!hist.timeline.length) {
     tl.innerHTML = plBarHtml + '<div style="font-family:var(--mono);font-size:11px;color:var(--text3);padding:8px 0;">No signals found in history</div>';
   } else {
-    const SIG_COLORS = {
-      buy: 'var(--bull)', sell: 'var(--bear)', exit: 'var(--exit)'
-    };
-    const plBadge = (outcome) => {
-      if (outcome === 'win')  return '<span class="pl-win">✓ WIN +2%</span>';
-      if (outcome === 'loss') return '<span class="pl-loss">✗ LOSS −4%</span>';
-      if (outcome === 'open') return '<span class="pl-open">⏳ OPEN</span>';
-      return '<span class="pl-na">— N/A</span>';
-    };
+    const SIG_COLORS = { buy: 'var(--bull)', sell: 'var(--bear)', exit: 'var(--exit)' };
     tl.innerHTML = plBarHtml + hist.timeline.map(e => {
       const col = SIG_COLORS[e.type] || 'var(--text)';
       const dateStr = e.date instanceof Date
@@ -4049,9 +4087,12 @@ function applyFilters() {
   if (fWinRate > 0)       arr = arr.filter(s => {
     const h = s.history;
     if (!h) return false;
-    const resolved = (h.plWins || 0) + (h.plLosses || 0);
-    if (resolved < 3) return false;  // need min 3 resolved trades
-    return Math.round(h.plWins / resolved * 100) >= fWinRate;
+    // Use the side matching today's signal — buy signal → buy WR, sell signal → sell WR
+    const stats = s.type === 'sell' ? h.sellStats : h.buyStats;
+    if (!stats) return false;
+    const resolved = stats.wins + stats.losses;
+    if (resolved < 3) return false;
+    return Math.round(stats.wins / resolved * 100) >= fWinRate;
   });
   if (fMinPrice > 0)      arr = arr.filter(s => s.price >= fMinPrice);
   if (fMaxPrice < Infinity) arr = arr.filter(s => s.price <= fMaxPrice);
@@ -4373,22 +4414,37 @@ function renderTable(signals) {
     // History cell
     const h = s.history;
     const histCell = h ? (() => {
-      // P/L inline summary
-      const resolved = (h.plWins || 0) + (h.plLosses || 0);
-      const wrPct    = resolved > 0 ? Math.round(h.plWins / resolved * 100) : null;
-      const wrCol    = wrPct === null ? 'var(--text3)' : wrPct >= 60 ? 'var(--bull)' : wrPct >= 45 ? 'var(--amber)' : 'var(--bear)';
-      const plLine   = resolved > 0
-        ? `<div style="display:flex;align-items:center;gap:5px;margin-top:4px;flex-wrap:wrap;">
-             <span style="font-family:var(--mono);font-size:9px;color:var(--bull);font-weight:700;">✓W:${h.plWins}</span>
-             <span style="font-family:var(--mono);font-size:9px;color:var(--bear);font-weight:700;">✗L:${h.plLosses}</span>
-             ${(h.plOpen||0) > 0 ? `<span style="font-family:var(--mono);font-size:9px;color:var(--amber);font-weight:700;">⏳${h.plOpen}</span>` : ''}
-             <span style="font-family:var(--mono);font-size:10px;font-weight:700;color:${wrCol};
-                          background:${wrCol === 'var(--bull)' ? 'rgba(5,150,105,0.10)' : wrCol === 'var(--bear)' ? 'rgba(220,38,38,0.09)' : 'rgba(217,119,6,0.09)'};
-                          padding:1px 6px;border-radius:8px;border:1px solid currentColor;">
-               WR&nbsp;${wrPct}%
-             </span>
-           </div>`
-        : `<div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:3px;">No resolved trades</div>`;
+      const isBuySig  = s.type === 'buy';
+      const isSellSig = s.type === 'sell';
+
+      // Helper: render one WR line
+      const wrLine = (label, stats, isActive) => {
+        const { wins, losses, early, winRate } = stats;
+        const resolved = wins + losses;
+        if (resolved === 0 && early === 0) return '';
+        const wrCol  = winRate === null ? 'var(--text3)'
+                     : winRate >= 60    ? 'var(--bull)'
+                     : winRate >= 45    ? 'var(--amber)'
+                     : 'var(--bear)';
+        const wrBg   = winRate === null ? 'rgba(107,114,128,0.07)'
+                     : winRate >= 60    ? 'rgba(5,150,105,0.10)'
+                     : winRate >= 45    ? 'rgba(217,119,6,0.09)'
+                     : 'rgba(220,38,38,0.09)';
+        const wrTxt  = winRate !== null ? `WR ${winRate}%` : 'WR N/A';
+        const outline = isActive ? `outline:1.5px solid ${wrCol};` : 'opacity:0.65;';
+        return `<div style="display:flex;align-items:center;gap:4px;margin-top:3px;flex-wrap:wrap;${outline}border-radius:5px;padding:1px 0;">
+          <span style="font-family:var(--mono);font-size:9px;color:var(--text3);font-weight:600;">${label}</span>
+          <span style="font-family:var(--mono);font-size:9px;color:var(--bull);font-weight:700;">✓${wins}</span>
+          <span style="font-family:var(--mono);font-size:9px;color:var(--bear);font-weight:700;">✗${losses}</span>
+          ${early > 0 ? `<span style="font-family:var(--mono);font-size:9px;color:var(--exit);font-weight:700;">↩${early}</span>` : ''}
+          <span style="font-family:var(--mono);font-size:9px;font-weight:700;color:${wrCol};
+                        background:${wrBg};padding:1px 5px;border-radius:7px;">${wrTxt}</span>
+        </div>`;
+      };
+
+      const buyLine  = h.buyStats  ? wrLine('▲B', h.buyStats,  isBuySig)  : '';
+      const sellLine = h.sellStats ? wrLine('▼S', h.sellStats, isSellSig) : '';
+
       return `
       <div class="hist-cell">
         <div class="hist-counts">
@@ -4399,7 +4455,7 @@ function renderTable(signals) {
             ? `<span class="hist-reliable">⭐ ×${h.currentSigCount}</span>`
             : `<span class="hist-new">🆕 1st</span>`}
         </div>
-        ${plLine}
+        ${buyLine}${sellLine}
         <button class="hist-view-btn" onclick="event.stopPropagation();openHistModal('${s.symbol}')">
           📅 view timeline
         </button>
