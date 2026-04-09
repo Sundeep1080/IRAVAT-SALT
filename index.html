@@ -990,7 +990,7 @@ body::before {
 }
 
 /* Signal Analytics panel tables */
-.sa-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:10px 0 4px; }
+.sa-grid { display:flex; flex-direction:column; gap:8px; padding:8px 0 4px; }
 .sa-table { width:100%; border-collapse:collapse; font-family:var(--mono); font-size:11px; }
 .sa-table th { padding:5px 8px; text-align:left; font-size:9px; font-weight:700; color:var(--text3);
   text-transform:uppercase; letter-spacing:1px; border-bottom:2px solid var(--border2); background:var(--bg3); }
@@ -4189,61 +4189,51 @@ function buildSignalAnalytics() {
     </tr>`;
   }).join('');
 
-  const sigTable = `
-    <div>
-      <div style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text);
-                  letter-spacing:1px;margin-bottom:6px;text-transform:uppercase;">
-        <i class="fas fa-bolt" style="color:var(--amber);margin-right:5px;"></i>Win Rate by Trigger Type
+  const mkCollapsible = (id, icon, title, tableHtml, noteHtml) => `
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div onclick="(function(el){
+              var b=el.parentElement.querySelector('.sa-body');
+              var ch=el.querySelector('.sa-chev');
+              b.style.display=b.style.display==='none'?'block':'none';
+              ch.style.transform=b.style.display==='none'?'rotate(-90deg)':'rotate(0deg)';
+            })(this)"
+           style="display:flex;align-items:center;justify-content:space-between;
+                  padding:8px 12px;cursor:pointer;background:var(--bg3);
+                  border-bottom:1px solid var(--border);user-select:none;">
+        <span style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text);
+                     letter-spacing:1px;text-transform:uppercase;display:flex;align-items:center;gap:6px;">
+          <i class="${icon}" style="color:var(--amber);"></i>${title}
+        </span>
+        <i class="fas fa-chevron-down sa-chev" style="color:var(--text3);font-size:10px;
+           transition:transform 0.2s;"></i>
       </div>
-      <table class="sa-table">
-        <thead><tr>
-          <th>Signal</th><th>✓W</th><th>✗L</th><th>↩E</th><th style="min-width:140px;">Win Rate</th><th>n</th>
-        </tr></thead>
-        <tbody>${sigRows}</tbody>
-      </table>
-      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;">
-        ✓W=hit +2% TP · ✗L=hit −4% SL · ↩E=exited at next signal · N/A=fewer than 3 resolved trades
-      </div>
-    </div>`;
-
-  // ── Table 2: By Band Zone ──
-  const zoneRows = ZONE_ORDER.map(k => {
-    const d = byZone[k];
-    const resolved = d.wins + d.losses;
-    const barW = resolved > 0 ? Math.round(d.wins / resolved * 100) : 0;
-    return `<tr>
-      <td><span class="sa-sig-lbl">${ZONE_LABELS[k] || k}</span></td>
-      <td class="sa-wins">${d.wins}</td>
-      <td class="sa-losses">${d.losses}</td>
-      <td class="sa-early">${d.early}</td>
-      <td>
-        <div class="sa-bar-wrap">
-          <div class="sa-bar"><div class="sa-bar-fill" style="width:${barW}%;background:${barColour(d.wins,d.losses)}"></div></div>
-          ${wrBadge(d.wins, d.losses)}
-        </div>
-      </td>
-      <td class="sa-n">${d.total}</td>
-    </tr>`;
-  }).join('');
-
-  const zoneTable = `
-    <div>
-      <div style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text);
-                  letter-spacing:1px;margin-bottom:6px;text-transform:uppercase;">
-        <i class="fas fa-layer-group" style="color:var(--amber);margin-right:5px;"></i>Win Rate by Band Zone
-      </div>
-      <table class="sa-table">
-        <thead><tr>
-          <th>Zone</th><th>✓W</th><th>✗L</th><th>↩E</th><th style="min-width:140px;">Win Rate</th><th>n</th>
-        </tr></thead>
-        <tbody>${zoneRows}</tbody>
-      </table>
-      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;">
-        Zone recorded at signal entry bar · counts all B &amp; S signals across all stocks
+      <div class="sa-body" style="display:block;padding:10px 12px 8px;">
+        <table class="sa-table">${tableHtml}</table>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;">${noteHtml}</div>
       </div>
     </div>`;
 
-  grid.innerHTML = sigTable + zoneTable;
+  const sigTableHtml = `
+    <thead><tr>
+      <th>Signal</th><th>✓W</th><th>✗L</th><th>↩E</th><th style="min-width:140px;">Win Rate</th><th>n</th>
+    </tr></thead>
+    <tbody>${sigRows}</tbody>`;
+
+  const zoneTableHtml = `
+    <thead><tr>
+      <th>Zone</th><th>✓W</th><th>✗L</th><th>↩E</th><th style="min-width:140px;">Win Rate</th><th>n</th>
+    </tr></thead>
+    <tbody>${zoneRows}</tbody>`;
+
+  const sigBlock  = mkCollapsible('sa-trig', 'fas fa-bolt',
+    'Win Rate by Trigger Type', sigTableHtml,
+    '✓W=hit +2% TP &nbsp;·&nbsp; ✗L=hit −4% SL &nbsp;·&nbsp; ↩E=exited at next signal &nbsp;·&nbsp; N/A=&lt;3 resolved');
+
+  const zoneBlock = mkCollapsible('sa-zone', 'fas fa-layer-group',
+    'Win Rate by Band Zone', zoneTableHtml,
+    'Zone recorded at signal entry bar &nbsp;·&nbsp; counts all B &amp; S signals across all stocks');
+
+  grid.innerHTML = sigBlock + zoneBlock;
   panel.style.display = 'block';
   panel.classList.add('open');
 }
