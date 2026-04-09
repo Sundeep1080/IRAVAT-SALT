@@ -975,6 +975,41 @@ body::before {
 .rr-cell    { font-family: var(--mono); font-size: 11px; color: var(--text2); margin-top: 3px; }
 
 /* Merged TP/SL cell */
+/* Returns cell */
+.ret-pos { font-family:var(--mono); font-size:13px; font-weight:700; color:var(--bull); }
+.ret-neg { font-family:var(--mono); font-size:13px; font-weight:700; color:var(--bear); }
+.ret-neu { font-family:var(--mono); font-size:13px; font-weight:700; color:var(--text2); }
+.ret-sub { font-family:var(--mono); font-size:9px; color:var(--text3); margin-top:2px; }
+
+/* Index badge on symbol */
+.idx-badge {
+  display:inline-block; padding:1px 5px; border-radius:3px; margin-left:5px;
+  font-family:var(--mono); font-size:8px; font-weight:700; letter-spacing:0.5px;
+  background:rgba(129,140,248,0.12); color:#4338ca; border:1px solid rgba(129,140,248,0.3);
+  vertical-align:middle;
+}
+
+/* Signal Analytics panel tables */
+.sa-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:10px 0 4px; }
+.sa-table { width:100%; border-collapse:collapse; font-family:var(--mono); font-size:11px; }
+.sa-table th { padding:5px 8px; text-align:left; font-size:9px; font-weight:700; color:var(--text3);
+  text-transform:uppercase; letter-spacing:1px; border-bottom:2px solid var(--border2); background:var(--bg3); }
+.sa-table td { padding:5px 8px; border-bottom:1px solid var(--border); }
+.sa-table tr:hover td { background:rgba(217,119,6,0.04); }
+.sa-sig-lbl { font-weight:700; color:var(--bright); }
+.sa-wins    { color:var(--bull); font-weight:700; }
+.sa-losses  { color:var(--bear); font-weight:700; }
+.sa-early   { color:var(--exit); font-weight:700; }
+.sa-wr      { font-weight:700; padding:2px 7px; border-radius:8px; font-size:10px; }
+.sa-wr-good { background:rgba(5,150,105,0.11); color:#047857; border:1px solid rgba(5,150,105,0.28); }
+.sa-wr-ok   { background:rgba(217,119,6,0.09); color:var(--amber-d); border:1px solid rgba(217,119,6,0.28); }
+.sa-wr-bad  { background:rgba(220,38,38,0.09); color:#b91c1c; border:1px solid rgba(220,38,38,0.22); }
+.sa-wr-na   { background:rgba(107,114,128,0.07); color:var(--wait); border:1px solid var(--border); }
+.sa-bar-wrap{ display:flex; align-items:center; gap:5px; }
+.sa-bar     { flex:1; height:6px; background:var(--bg3); border-radius:3px; overflow:hidden; }
+.sa-bar-fill{ height:100%; border-radius:3px; }
+.sa-n       { color:var(--text3); font-size:10px; }
+
 .tpsl-cell { font-family: var(--mono); font-size: 12px; line-height: 2; }
 .tpsl-tp   { color: var(--bull); font-weight: 700; }
 .tpsl-sl   { color: var(--bear); font-weight: 700; }
@@ -2322,6 +2357,26 @@ body::before {
     </div>
   </div>
 
+  </div>
+
+  <!-- ── SIGNAL ANALYTICS (collapsible) ── -->
+  <div class="collapsible-panel" id="sigAnalyticsPanel" onclick="togglePanel('sigAnalyticsPanel')" style="display:none;">
+    <div class="collapsible-header">
+      <div class="collapsible-title">
+        <i class="fas fa-chart-bar" style="color:var(--amber)"></i> SIGNAL ANALYTICS — Win Rate by Trigger &amp; Zone
+      </div>
+      <div class="collapsible-summary">
+        <span style="font-size:9px;color:var(--text3)">Aggregated across all stocks · 2%TP / 4%SL · stops at next signal</span>
+      </div>
+      <i class="fas fa-chevron-down collapsible-chevron"></i>
+    </div>
+    <div class="collapsible-body" onclick="event.stopPropagation()">
+      <div class="sa-grid" id="saGrid">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--text3);padding:10px;">Run scan to populate analytics.</div>
+      </div>
+    </div>
+  </div>
+
   <!-- ── FILTER BAR ── -->
   <div class="filter-bar" id="filterBar">
     <!-- Stock Search — instant live filter -->
@@ -2432,13 +2487,14 @@ body::before {
             <th onclick="sortBy('bandZone')">Band Position</th>
             <th id="thBandChart">Band Chart</th>
             <th onclick="sortBy('price')">CMP</th>
+            <th onclick="sortBy('returns100d')" id="thReturns">Returns</th>
             <th>GTT Orders</th>
             <th onclick="sortBy('takeProfit')">TP / SL &amp; R:R</th>
           </tr>
         </thead>
         <tbody id="tbody">
           <tr>
-            <td colspan="14">
+            <td colspan="15">
               <div class="empty-state">
                 <i class="fas fa-chart-candlestick"></i>
                 <h3>No data loaded</h3>
@@ -3270,7 +3326,7 @@ function calcSignalHistory(sym, info, p, currentSig) {
                 : sig.startsWith('S') ? 'sell'
                 : ['HLE','LE','HSE','SE'].includes(sig) ? 'exit' : null;
     if (!type) continue;
-    allSigBars.push({ bar: i, sig, type });
+    allSigBars.push({ bar: i, sig, type, zone });
   }
 
   // ── PASS 2: resolve P/L for each signal ──
@@ -3279,7 +3335,7 @@ function calcSignalHistory(sym, info, p, currentSig) {
   let buys = 0, sells = 0, exits = 0, currentSigCount = 0;
 
   for (let k = 0; k < allSigBars.length; k++) {
-    const { bar: i, sig, type } = allSigBars[k];
+    const { bar: i, sig, type, zone: sigZone } = allSigBars[k];
     const nextSigBar = k + 1 < allSigBars.length ? allSigBars[k + 1].bar : n;
     const isToday    = (i === n - 1);
     const entry      = rows[i].cl;
@@ -3315,7 +3371,7 @@ function calcSignalHistory(sym, info, p, currentSig) {
 
     timeline.push({ bar: i, date: rows[i].dt, sig, type,
                     price: Math.round(entry * 100) / 100,
-                    score: sc, isToday, outcome });
+                    score: sc, isToday, outcome, zone: sigZone });
 
     if (type === 'buy')  buys++;
     if (type === 'sell') sells++;
@@ -3540,8 +3596,16 @@ function processStock(sym, info, p) {
                           (sig.startsWith('S') && weeklyTrend === 'bear');
     const actionTag = calcActionTag(sig, score, bd.bandZone, weeklyAligned, weeklyTrend);
 
+    // Returns over lookback period
+    const lbIdx = Math.max(0, rows.length - 1 - p.zoneLB);
+    const firstClose = rows[lbIdx].cl;
+    const returns100d = firstClose > 0
+      ? +((( cmp - firstClose) / firstClose) * 100).toFixed(2)
+      : null;
+
     // Signal history — scan all bars
     const history = calcSignalHistory(sym, info, p, sig);
+    const isIndex = REGIME_SYMBOLS.includes(sym);
 
     return {
       symbol: sym, index: info.index, sector: info.sector,
@@ -3554,7 +3618,7 @@ function processStock(sym, info, p) {
       bands: bd, spreads: sprd, atr: Math.round(atr * 100) / 100,
       weeklyTrend, weeklyAligned, barsAgo, score,
       actionTag, actionRank: actionTag.rank,
-      history,
+      history, returns100d, isIndex,
     };
 
   } catch (e) {
@@ -3580,7 +3644,7 @@ async function runProcessing() {
   };
 
   const symbols = Object.keys(uploadedParsed)
-    .filter(sym => !REGIME_SYMBOLS.includes(sym) && uploadedParsed[sym].rows.length >= p.minDays)
+    .filter(sym => uploadedParsed[sym].rows.length >= p.minDays)
     .sort();
 
   // Extract regime data — recognise all mapped symbols
@@ -3630,12 +3694,14 @@ async function runProcessing() {
   const elapsed = ((Date.now() - procStart) / 1000).toFixed(1);
 
   allSignals = results;
-  // Update band chart column header to reflect actual lookback used
   const thBC = document.getElementById('thBandChart');
   if (thBC) thBC.textContent = `Band Chart (${p.zoneLB}d)`;
+  const thRet = document.getElementById('thReturns');
+  if (thRet) thRet.textContent = `Returns (${p.zoneLB}d)`;
   populateFilterDropdowns();
   applyFilters();
   updateStats(elapsed);
+  buildSignalAnalytics();
 
   document.getElementById('exportBtn').style.display = 'inline-flex';
   toast(`Generated ${results.length} signals from ${total} stocks in ${elapsed}s`, 'ok');
@@ -4031,6 +4097,157 @@ function clearSectorFilter() {
   applyFilters();
 }
 
+/* ───────────────────────────────────────────────
+   SIGNAL ANALYTICS — WR by trigger type & band zone
+   Aggregates across ALL stocks' history timelines
+─────────────────────────────────────────────── */
+function buildSignalAnalytics() {
+  const panel = document.getElementById('sigAnalyticsPanel');
+  const grid  = document.getElementById('saGrid');
+  if (!panel || !grid) return;
+
+  // Aggregate all timeline entries
+  const bySig  = {};  // keyed by sig name e.g. 'B1-OS'
+  const byZone = {};  // keyed by zone e.g. 'rej_lo'
+
+  const ZONE_LABELS = {
+    'rej_lo':   '🟢 REJ↓ (B1/B2)',
+    'below_va': '🔵 Below VA',
+    'va':       '🟣 In VA',
+    'above_va': '🟠 Above VA',
+    'rej_hi':   '🔴 REJ↑ (B9/B10)',
+  };
+
+  const SIG_ORDER  = ['B1-OS','B1-MOM','B2','B3','S1-OB','S1-MOM','S2','S3'];
+  const ZONE_ORDER = ['rej_lo','below_va','va','above_va','rej_hi'];
+
+  SIG_ORDER.forEach(k  => { bySig[k]  = { wins:0, losses:0, early:0, total:0 }; });
+  ZONE_ORDER.forEach(k => { byZone[k] = { wins:0, losses:0, early:0, total:0 }; });
+
+  allSignals.forEach(s => {
+    if (!s.history || !s.history.timeline) return;
+    // timeline is stored reversed (newest first) — iterate all
+    s.history.timeline.forEach(e => {
+      if (e.type !== 'buy' && e.type !== 'sell') return;
+      if (e.outcome === 'open' || e.outcome === 'na') return;
+
+      // by signal type
+      if (bySig[e.sig]) {
+        bySig[e.sig].total++;
+        if (e.outcome === 'win')        bySig[e.sig].wins++;
+        else if (e.outcome === 'loss')  bySig[e.sig].losses++;
+        else if (e.outcome === 'early_exit') bySig[e.sig].early++;
+      }
+
+      // by zone at signal time
+      const z = e.zone;
+      if (z && byZone[z]) {
+        byZone[z].total++;
+        if (e.outcome === 'win')        byZone[z].wins++;
+        else if (e.outcome === 'loss')  byZone[z].losses++;
+        else if (e.outcome === 'early_exit') byZone[z].early++;
+      }
+    });
+  });
+
+  // Helper: render WR badge
+  const wrBadge = (wins, losses) => {
+    const resolved = wins + losses;
+    if (resolved < 3) return '<span class="sa-wr sa-wr-na">N/A</span>';
+    const wr  = Math.round(wins / resolved * 100);
+    const cls = wr >= 60 ? 'sa-wr-good' : wr >= 45 ? 'sa-wr-ok' : 'sa-wr-bad';
+    return `<span class="sa-wr ${cls}">${wr}%</span>`;
+  };
+
+  // Helper: bar colour
+  const barColour = (wins, losses) => {
+    const r = wins + losses;
+    if (!r) return '#9ca3af';
+    const wr = wins / r;
+    return wr >= 0.6 ? '#059669' : wr >= 0.45 ? '#d97706' : '#dc2626';
+  };
+
+  // ── Table 1: By Signal Type ──
+  const sigRows = SIG_ORDER.map(k => {
+    const d = bySig[k];
+    const resolved = d.wins + d.losses;
+    const barW = resolved > 0 ? Math.round(d.wins / resolved * 100) : 0;
+    const isBuy = k.startsWith('B');
+    const col   = isBuy ? 'var(--bull)' : 'var(--bear)';
+    return `<tr>
+      <td><span class="sa-sig-lbl" style="color:${col}">${k}</span></td>
+      <td class="sa-wins">${d.wins}</td>
+      <td class="sa-losses">${d.losses}</td>
+      <td class="sa-early">${d.early}</td>
+      <td>
+        <div class="sa-bar-wrap">
+          <div class="sa-bar"><div class="sa-bar-fill" style="width:${barW}%;background:${barColour(d.wins,d.losses)}"></div></div>
+          ${wrBadge(d.wins, d.losses)}
+        </div>
+      </td>
+      <td class="sa-n">${d.total}</td>
+    </tr>`;
+  }).join('');
+
+  const sigTable = `
+    <div>
+      <div style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text);
+                  letter-spacing:1px;margin-bottom:6px;text-transform:uppercase;">
+        <i class="fas fa-bolt" style="color:var(--amber);margin-right:5px;"></i>Win Rate by Trigger Type
+      </div>
+      <table class="sa-table">
+        <thead><tr>
+          <th>Signal</th><th>✓W</th><th>✗L</th><th>↩E</th><th style="min-width:140px;">Win Rate</th><th>n</th>
+        </tr></thead>
+        <tbody>${sigRows}</tbody>
+      </table>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;">
+        ✓W=hit +2% TP · ✗L=hit −4% SL · ↩E=exited at next signal · N/A=fewer than 3 resolved trades
+      </div>
+    </div>`;
+
+  // ── Table 2: By Band Zone ──
+  const zoneRows = ZONE_ORDER.map(k => {
+    const d = byZone[k];
+    const resolved = d.wins + d.losses;
+    const barW = resolved > 0 ? Math.round(d.wins / resolved * 100) : 0;
+    return `<tr>
+      <td><span class="sa-sig-lbl">${ZONE_LABELS[k] || k}</span></td>
+      <td class="sa-wins">${d.wins}</td>
+      <td class="sa-losses">${d.losses}</td>
+      <td class="sa-early">${d.early}</td>
+      <td>
+        <div class="sa-bar-wrap">
+          <div class="sa-bar"><div class="sa-bar-fill" style="width:${barW}%;background:${barColour(d.wins,d.losses)}"></div></div>
+          ${wrBadge(d.wins, d.losses)}
+        </div>
+      </td>
+      <td class="sa-n">${d.total}</td>
+    </tr>`;
+  }).join('');
+
+  const zoneTable = `
+    <div>
+      <div style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text);
+                  letter-spacing:1px;margin-bottom:6px;text-transform:uppercase;">
+        <i class="fas fa-layer-group" style="color:var(--amber);margin-right:5px;"></i>Win Rate by Band Zone
+      </div>
+      <table class="sa-table">
+        <thead><tr>
+          <th>Zone</th><th>✓W</th><th>✗L</th><th>↩E</th><th style="min-width:140px;">Win Rate</th><th>n</th>
+        </tr></thead>
+        <tbody>${zoneRows}</tbody>
+      </table>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;">
+        Zone recorded at signal entry bar · counts all B &amp; S signals across all stocks
+      </div>
+    </div>`;
+
+  grid.innerHTML = sigTable + zoneTable;
+  panel.style.display = 'block';
+  panel.classList.add('open');
+}
+
 /* ── v5 Toggle filter functions ── */
 function toggleFreshFilter() {
   filterFresh = !filterFresh;
@@ -4346,7 +4563,7 @@ function renderTable(signals) {
 
   if (!signals.length) {
     tbody.innerHTML = `
-      <tr><td colspan="14">
+      <tr><td colspan="15">
         <div class="empty-state">
           <i class="fas fa-magnifying-glass"></i>
           <h3>No signals match filters</h3>
@@ -4473,7 +4690,7 @@ function renderTable(signals) {
               `<mark style="background:rgba(217,119,6,0.25);color:var(--amber);
                             border-radius:2px;padding:0 1px;">${s._searchTerm}</mark>`)
           : s.symbol
-      }</td>
+      }${s.isIndex ? '<span class="idx-badge">IDX</span>' : ''}</td>
       <td>${histCell}</td>
       <td>
         <span class="sig ${sigClass(s.signal)}">${s.signal}</span>
@@ -4501,6 +4718,14 @@ function renderTable(signals) {
       </td>
       <td>${buildBandChart(s.bands)}</td>
       <td class="price-cell">${fmtPrice(s.price)}</td>
+      <td>${(() => {
+        const r = s.returns100d;
+        if (r === null || r === undefined) return '<span style="color:var(--text3)">—</span>';
+        const cls  = r > 1 ? 'ret-pos' : r < -1 ? 'ret-neg' : 'ret-neu';
+        const sign = r > 0 ? '+' : '';
+        const lb   = document.getElementById('p_zoneLB')?.value || '100';
+        return `<div class="${cls}">${sign}${r.toFixed(1)}%</div><div class="ret-sub">${lb}d</div>`;
+      })()}</td>
       <td>${gttCell}</td>
       <td>
         <div class="tpsl-cell">
@@ -4728,7 +4953,7 @@ function clearAll() {
   const badge = document.getElementById('advDecModeBadge');
   if (badge) badge.textContent = 'ALL';
   document.getElementById('tbody').innerHTML = `
-    <tr><td colspan="14">
+    <tr><td colspan="15">
       <div class="empty-state">
         <i class="fas fa-chart-candlestick"></i>
         <h3>No data loaded</h3>
