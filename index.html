@@ -4305,7 +4305,24 @@ function renderTable(signals) {
 
     // History cell
     const h = s.history;
-    const histCell = h ? `
+    const histCell = h ? (() => {
+      // P/L inline summary
+      const resolved = (h.plWins || 0) + (h.plLosses || 0);
+      const wrPct    = resolved > 0 ? Math.round(h.plWins / resolved * 100) : null;
+      const wrCol    = wrPct === null ? 'var(--text3)' : wrPct >= 60 ? 'var(--bull)' : wrPct >= 45 ? 'var(--amber)' : 'var(--bear)';
+      const plLine   = resolved > 0
+        ? `<div style="display:flex;align-items:center;gap:5px;margin-top:4px;flex-wrap:wrap;">
+             <span style="font-family:var(--mono);font-size:9px;color:var(--bull);font-weight:700;">✓W:${h.plWins}</span>
+             <span style="font-family:var(--mono);font-size:9px;color:var(--bear);font-weight:700;">✗L:${h.plLosses}</span>
+             ${(h.plOpen||0) > 0 ? `<span style="font-family:var(--mono);font-size:9px;color:var(--amber);font-weight:700;">⏳${h.plOpen}</span>` : ''}
+             <span style="font-family:var(--mono);font-size:10px;font-weight:700;color:${wrCol};
+                          background:${wrCol === 'var(--bull)' ? 'rgba(5,150,105,0.10)' : wrCol === 'var(--bear)' ? 'rgba(220,38,38,0.09)' : 'rgba(217,119,6,0.09)'};
+                          padding:1px 6px;border-radius:8px;border:1px solid currentColor;">
+               WR&nbsp;${wrPct}%
+             </span>
+           </div>`
+        : `<div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:3px;">No resolved trades</div>`;
+      return `
       <div class="hist-cell">
         <div class="hist-counts">
           ${h.buys  > 0 ? `<span class="hist-b">▲${h.buys}</span>` : ''}
@@ -4315,10 +4332,12 @@ function renderTable(signals) {
             ? `<span class="hist-reliable">⭐ ×${h.currentSigCount}</span>`
             : `<span class="hist-new">🆕 1st</span>`}
         </div>
+        ${plLine}
         <button class="hist-view-btn" onclick="event.stopPropagation();openHistModal('${s.symbol}')">
           📅 view timeline
         </button>
-      </div>` : '<span style="font-family:var(--mono);font-size:9px;color:var(--text3)">—</span>';
+      </div>`;
+    })() : '<span style="font-family:var(--mono);font-size:9px;color:var(--text3)">—</span>';
 
     tr.innerHTML = `
       <td style="text-align:center">${scoreCell}${freshBadge}</td>
