@@ -836,7 +836,53 @@ body::before {
 .al3 { color: var(--exit); font-weight: 600; }
 .al4 { color: #b91c1c; font-weight: 600; }
 
-/* ── BAND CHART (replaces Z0-Z4) ── */
+/* ── BAND INFO STRIP — top of each band chart cell ── */
+.band-info-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3px;
+  margin-bottom: 5px;
+  padding: 4px 6px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 9px;
+  line-height: 1.4;
+}
+.bis-item  { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
+.bis-lbl   { font-weight: 700; font-size: 8px; letter-spacing: 0.5px; opacity: 0.7; text-transform: uppercase; }
+.bis-now   { color: var(--amber);  font-weight: 600; }
+.bis-mtp   { color: #f59e0b;       font-weight: 600; }
+.bis-va    { color: #818cf8;       font-weight: 600; }
+.bis-rej   { color: var(--bear);   font-weight: 600; }
+.bis-rejl  { color: var(--bull);   font-weight: 600; }
+.bis-sep   { color: var(--border2); font-size: 9px; }
+
+/* ── INLINE BAND TAGS ── */
+.btag-wrap { display: flex; align-items: center; gap: 2px; min-width: 60px; justify-content: flex-end; flex-shrink: 0; }
+.btag {
+  display: inline-block;
+  padding: 0px 4px;
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  line-height: 1.6;
+}
+.btag-now  { background: rgba(217,119,6,0.18);  color: #92400e;  border: 1px solid rgba(217,119,6,0.4); }
+.btag-mtp  { background: rgba(245,158,11,0.15); color: #78350f;  border: 1px solid rgba(245,158,11,0.4); }
+.btag-r2   { background: rgba(129,140,248,0.12);color: #4338ca;  border: 1px solid rgba(129,140,248,0.3); }
+.btag-r3   { background: rgba(5,150,105,0.10);  color: #065f46;  border: 1px solid rgba(5,150,105,0.25); }
+.btag-rej  { background: rgba(220,38,38,0.12);  color: #991b1b;  border: 1px solid rgba(220,38,38,0.3); }
+.btag-rejl { background: rgba(5,150,105,0.12);  color: #065f46;  border: 1px solid rgba(5,150,105,0.3); }
+.btag-va   { background: rgba(99,102,241,0.10); color: #3730a3;  border: 1px solid rgba(99,102,241,0.25); }
+
+/* Band cell: remove old summary styles, keep bar styles intact */
+.band-summary { display: none; }
 .band-cell {
   font-family: var(--mono);
   font-size: 9.5px;
@@ -2340,6 +2386,16 @@ body::before {
         <option value="85">85+ (Best Only)</option>
       </select>
     </div>
+    <div class="flt-grp">
+      <label><i class="fas fa-trophy" style="color:var(--bull);"></i> Min Win Rate</label>
+      <select id="fWinRate" onchange="applyFilters()">
+        <option value="0">Any WR</option>
+        <option value="40">40%+ (≥3 trades)</option>
+        <option value="50">50%+ (≥3 trades)</option>
+        <option value="60">60%+ (≥3 trades)</option>
+        <option value="70">70%+ (≥3 trades)</option>
+      </select>
+    </div>
     <label class="flt-toggle" id="toggleFresh" onclick="toggleFreshFilter()">
       <i class="fas fa-bolt"></i> Fresh Only (b0-b2)
     </label>
@@ -2371,7 +2427,7 @@ body::before {
             <th>HMA 9/10 · Weekly</th>
             <th>SMI 10,3,3</th>
             <th onclick="sortBy('bandZone')">Band Position</th>
-            <th>Band Chart (60d)</th>
+            <th id="thBandChart">Band Chart</th>
             <th onclick="sortBy('price')">CMP</th>
             <th>GTT Orders</th>
             <th onclick="sortBy('takeProfit')">TP / SL &amp; R:R</th>
@@ -3536,6 +3592,9 @@ async function runProcessing() {
   const elapsed = ((Date.now() - procStart) / 1000).toFixed(1);
 
   allSignals = results;
+  // Update band chart column header to reflect actual lookback used
+  const thBC = document.getElementById('thBandChart');
+  if (thBC) thBC.textContent = `Band Chart (${p.zoneLB}d)`;
   populateFilterDropdowns();
   applyFilters();
   updateStats(elapsed);
@@ -3970,6 +4029,7 @@ function applyFilters() {
   const fsig      = document.getElementById('fSignal').value;
   const fz        = document.getElementById('fZone').value;
   const fScore    = parseInt(document.getElementById('fScore').value) || 0;
+  const fWinRate  = parseInt(document.getElementById('fWinRate').value) || 0;
   const fMinPrice = parseFloat(document.getElementById('fMinPrice').value) || 0;
   const fMaxPrice = parseFloat(document.getElementById('fMaxPrice').value) || Infinity;
   const fSearchEl = document.getElementById('fSearch');
@@ -3986,6 +4046,13 @@ function applyFilters() {
   if (fsig  !== 'all')    arr = arr.filter(s => s.type     === fsig);
   if (fz    !== 'all')    arr = arr.filter(s => s.bandZone === fz);
   if (fScore > 0)         arr = arr.filter(s => (s.score ?? 0) >= fScore);
+  if (fWinRate > 0)       arr = arr.filter(s => {
+    const h = s.history;
+    if (!h) return false;
+    const resolved = (h.plWins || 0) + (h.plLosses || 0);
+    if (resolved < 3) return false;  // need min 3 resolved trades
+    return Math.round(h.plWins / resolved * 100) >= fWinRate;
+  });
   if (fMinPrice > 0)      arr = arr.filter(s => s.price >= fMinPrice);
   if (fMaxPrice < Infinity) arr = arr.filter(s => s.price <= fMaxPrice);
   if (filterFresh)        arr = arr.filter(s => (s.barsAgo ?? 99) <= 2);
@@ -4039,7 +4106,7 @@ function quickFilter(type) {
 }
 
 function clearFilters() {
-  ['fIndex','fSector','fSignal','fZone','fScore'].forEach(id => document.getElementById(id).value = id === 'fScore' ? '0' : 'all');
+  ['fIndex','fSector','fSignal','fZone','fScore','fWinRate'].forEach(id => document.getElementById(id).value = (id === 'fScore' || id === 'fWinRate') ? '0' : 'all');
   document.getElementById('fMinPrice').value = '200';
   document.getElementById('fMaxPrice').value = '';
   const fSearchEl = document.getElementById('fSearch');
@@ -4120,41 +4187,66 @@ function buildBandChart(bd) {
           vaHiIdx, vaLoIdx, curBand, rejHi, rejLo1, rejLo2,
           totBars, dirArrow } = bd;
 
-  let html = '<div class="band-cell">';
+  // ── Top info strip ──
+  const curPrice = bLo[curBand].toFixed(0) + '–' + bHi[curBand].toFixed(0);
+  const vaRange  = 'B' + (vaLoIdx + 1) + '–B' + (vaHiIdx + 1);
+  const mtpVal   = '₹' + bMTP[rank1].toFixed(0);
+  const rejUpVal = bHi[NB-1].toFixed(0);
+  const rejDnVal = bLo[0].toFixed(0);
+
+  let html = `<div class="band-cell">
+  <div class="band-info-strip">
+    <span class="bis-item bis-now"><span class="bis-lbl">NOW</span> B${curBand+1}${dirArrow} ${curPrice}</span>
+    <span class="bis-sep">·</span>
+    <span class="bis-item bis-mtp"><span class="bis-lbl">MTP</span> ${mtpVal}</span>
+    <span class="bis-sep">·</span>
+    <span class="bis-item bis-va"><span class="bis-lbl">VA</span> ${vaRange}</span>
+    <span class="bis-sep">·</span>
+    <span class="bis-item bis-rej"><span class="bis-lbl">REJ↑</span> ${rejUpVal}</span>
+    <span class="bis-sep">·</span>
+    <span class="bis-item bis-rejl"><span class="bis-lbl">REJ↓</span> ${rejDnVal}</span>
+  </div>`;
+
+  // ── Bar rows with inline tags ──
   for (let i = NB - 1; i >= 0; i--) {
-    const isREJHi  = i === rejHi;
-    const isREJLo  = i === rejLo1 || i === rejLo2;
-    const isVA     = i >= vaLoIdx && i <= vaHiIdx;
-    const isCur    = i === curBand;
-    const isR1     = i === rank1;
-    const isR2     = i === rank2;
-    const isR3     = i === rank3;
+    const isREJHi = i === rejHi;
+    const isREJLo = i === rejLo1 || i === rejLo2;
+    const isVA    = i >= vaLoIdx && i <= vaHiIdx;
+    const isCur   = i === curBand;
+    const isR1    = i === rank1;
+    const isR2    = i === rank2;
+    const isR3    = i === rank3;
 
     const pct  = Math.round(bBars[i] / totBars * 100);
     const barW = Math.round(bBars[i] / (bBars[rank1] || 1) * 100);
 
-    const rowCls = isCur    ? 'band-row b-cur'
-                 : isREJHi  ? 'band-row b-rej-hi'
-                 : isREJLo  ? 'band-row b-rej-lo'
-                 : isVA     ? 'band-row b-va'
-                 : 'band-row';
+    const rowCls  = isCur   ? 'band-row b-cur'
+                  : isREJHi ? 'band-row b-rej-hi'
+                  : isREJLo ? 'band-row b-rej-lo'
+                  : isVA    ? 'band-row b-va'
+                  : 'band-row';
 
-    const lblCls = isCur    ? 'band-lbl cur'
-                 : isREJHi  ? 'band-lbl rej'
-                 : isREJLo  ? 'band-lbl rejl'
-                 : isVA     ? 'band-lbl va'
-                 : 'band-lbl';
+    const lblCls  = isCur   ? 'band-lbl cur'
+                  : isREJHi ? 'band-lbl rej'
+                  : isREJLo ? 'band-lbl rejl'
+                  : isVA    ? 'band-lbl va'
+                  : 'band-lbl';
 
-    const fillCls = isCur    ? 'band-bar-fill bf-cur'
-                  : isREJHi  ? 'band-bar-fill bf-rej'
-                  : isREJLo  ? 'band-bar-fill bf-rejl'
-                  : isVA     ? 'band-bar-fill bf-va'
+    const fillCls = isCur   ? 'band-bar-fill bf-cur'
+                  : isREJHi ? 'band-bar-fill bf-rej'
+                  : isREJLo ? 'band-bar-fill bf-rejl'
+                  : isVA    ? 'band-bar-fill bf-va'
                   : 'band-bar-fill bf-norm';
 
-    const rankStr = isR1 ? '<span class="band-rank r1">#1</span>'
-                  : isR2 ? '<span class="band-rank r2">#2</span>'
-                  : isR3 ? '<span class="band-rank r3">#3</span>'
-                  : '<span class="band-rank"></span>';
+    // Inline annotation tags (right side of each row)
+    let tags = '';
+    if (isCur)   tags += `<span class="btag btag-now">${dirArrow}NOW</span>`;
+    if (isR1)    tags += `<span class="btag btag-mtp">MTP</span>`;
+    else if (isR2) tags += `<span class="btag btag-r2">#2</span>`;
+    else if (isR3) tags += `<span class="btag btag-r3">#3</span>`;
+    if (isREJHi) tags += `<span class="btag btag-rej">REJ↑</span>`;
+    if (isREJLo) tags += `<span class="btag btag-rejl">REJ↓</span>`;
+    if (isVA && !isCur) tags += `<span class="btag btag-va">VA</span>`;
 
     const curMark = isCur ? dirArrow + ' ' : '';
 
@@ -4164,36 +4256,11 @@ function buildBandChart(bd) {
         <div class="${fillCls}" style="width:${barW}%"></div>
       </div>
       <span class="band-pct">${pct}%</span>
-      ${rankStr}
+      <div class="btag-wrap">${tags || '<span class="band-rank"></span>'}</div>
     </div>`;
   }
 
-  // Summary footer
-  const curPrice = bLo[curBand].toFixed(1) + '–' + bHi[curBand].toFixed(1);
-  const vaRange  = 'B' + (vaLoIdx+1) + '–B' + (vaHiIdx+1);
-  html += `<div class="band-summary">
-    <div class="band-sum-row">
-      <span class="band-sum-lbl">NOW</span>
-      <span class="band-sum-val bsv-cur">B${curBand+1} ${dirArrow} ${curPrice}</span>
-    </div>
-    <div class="band-sum-row">
-      <span class="band-sum-lbl">MTP</span>
-      <span class="band-sum-val bsv-mtp">₹${bMTP[rank1].toFixed(2)}</span>
-    </div>
-    <div class="band-sum-row">
-      <span class="band-sum-lbl">VA</span>
-      <span class="band-sum-val bsv-va">${vaRange}</span>
-    </div>
-    <div class="band-sum-row">
-      <span class="band-sum-lbl">REJ↑</span>
-      <span class="band-sum-val bsv-rej">B10 ${bHi[NB-1].toFixed(1)}</span>
-    </div>
-    <div class="band-sum-row">
-      <span class="band-sum-lbl">REJ↓</span>
-      <span class="band-sum-val bsv-rejl">B1 ${bLo[0].toFixed(1)}</span>
-    </div>
-  </div></div>`;
-
+  html += '</div>';
   return html;
 }
 const SIG_DESCS = {
