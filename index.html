@@ -928,6 +928,41 @@ body::before {
 .sl-cell    { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--bear); }
 .rr-cell    { font-family: var(--mono); font-size: 11px; color: var(--text2); margin-top: 3px; }
 
+/* Merged TP/SL cell */
+.tpsl-cell { font-family: var(--mono); font-size: 12px; line-height: 2; }
+.tpsl-tp   { color: var(--bull); font-weight: 700; }
+.tpsl-sl   { color: var(--bear); font-weight: 700; }
+.tpsl-rr   { font-size: 10px; color: var(--text2); border-top: 1px solid var(--border); padding-top: 2px; margin-top: 1px; }
+
+/* P/L outcome badges in signal history */
+.pl-win  { display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;
+           font-family:var(--mono);font-size:9px;font-weight:700;
+           background:rgba(5,150,105,0.12);color:#047857;border:1px solid rgba(5,150,105,0.3); }
+.pl-loss { display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;
+           font-family:var(--mono);font-size:9px;font-weight:700;
+           background:rgba(220,38,38,0.10);color:#b91c1c;border:1px solid rgba(220,38,38,0.25); }
+.pl-open { display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;
+           font-family:var(--mono);font-size:9px;font-weight:700;
+           background:rgba(217,119,6,0.09);color:var(--amber);border:1px solid rgba(217,119,6,0.25); }
+.pl-na   { display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;
+           font-family:var(--mono);font-size:9px;font-weight:700;
+           background:rgba(107,114,128,0.07);color:var(--wait);border:1px solid var(--border); }
+
+/* P/L summary bar in history modal */
+.pl-summary-bar {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 8px 12px; margin-bottom: 10px;
+  font-family: var(--mono); font-size: 11px;
+}
+.pl-sum-win  { color: var(--bull); font-weight: 700; }
+.pl-sum-loss { color: var(--bear); font-weight: 700; }
+.pl-sum-open { color: var(--amber); font-weight: 700; }
+.pl-sum-wr   { padding: 3px 10px; border-radius: 10px; font-weight: 700; font-size: 12px; }
+.pl-sum-wr.wr-good { background:rgba(5,150,105,0.12); color:#047857; border:1px solid rgba(5,150,105,0.3); }
+.pl-sum-wr.wr-ok   { background:rgba(217,119,6,0.10); color:var(--amber); border:1px solid rgba(217,119,6,0.3); }
+.pl-sum-wr.wr-bad  { background:rgba(220,38,38,0.09); color:var(--bear); border:1px solid rgba(220,38,38,0.25); }
+
 /* Spreads */
 .spread-block { font-size: 11px; line-height: 2; }
 .spread-row   { display: flex; gap: 6px; align-items: flex-start; }
@@ -2339,14 +2374,12 @@ body::before {
             <th>Band Chart (60d)</th>
             <th onclick="sortBy('price')">CMP</th>
             <th>GTT Orders</th>
-            <th onclick="sortBy('takeProfit')">Target</th>
-            <th onclick="sortBy('stopLoss')">Stop Loss</th>
-            <th>R:R</th>
+            <th onclick="sortBy('takeProfit')">TP / SL &amp; R:R</th>
           </tr>
         </thead>
         <tbody id="tbody">
           <tr>
-            <td colspan="16">
+            <td colspan="14">
               <div class="empty-state">
                 <i class="fas fa-chart-candlestick"></i>
                 <h3>No data loaded</h3>
@@ -3163,11 +3196,10 @@ function calcSignalHistory(sym, info, p, currentSig) {
 
   const timeline = [];
   let buys = 0, sells = 0, exits = 0;
-  let currentSigCount = 0;  // how many times current signal type fired
+  let currentSigCount = 0;
 
   // Scan every bar from oldest to newest
   for (let i = Math.max(20, p.hmaFast + 5); i < n; i++) {
-    // Calculate band zone at this bar using closes up to bar i
     const closesUpTo = closes.slice(0, i + 1);
     const bdAt = calcBands(closesUpTo, Math.min(p.zoneLB, closesUpTo.length));
     const zoneAt = bdAt ? bdAt.bandZone : 'va';
@@ -3182,36 +3214,67 @@ function calcSignalHistory(sym, info, p, currentSig) {
 
     const sc = calcScore(sig, bd.bandZone, 0, 'neut', null);
     const isToday = (i === n - 1);
+    const entryPrice = rows[i].cl;
+
+    // P/L outcome: look forward using High/Low (more realistic)
+    let outcome = 'open'; // default for most-recent bar
+    if (!isToday && (type === 'buy' || type === 'sell')) {
+      const tpPct = 0.02;  // 2% take-profit
+      const slPct = 0.04;  // 4% stop-loss
+      for (let j = i + 1; j < n; j++) {
+        if (type === 'buy') {
+          const hitTP = highs[j] >= entryPrice * (1 + tpPct);
+          const hitSL = lows[j]  <= entryPrice * (1 - slPct);
+          if (hitTP && hitSL) { outcome = 'win'; break; } // same bar — conservative: SL wins
+          if (hitTP)          { outcome = 'win';  break; }
+          if (hitSL)          { outcome = 'loss'; break; }
+        } else { // sell
+          const hitTP = lows[j]  <= entryPrice * (1 - tpPct);
+          const hitSL = highs[j] >= entryPrice * (1 + slPct);
+          if (hitTP && hitSL) { outcome = 'loss'; break; }
+          if (hitTP)          { outcome = 'win';  break; }
+          if (hitSL)          { outcome = 'loss'; break; }
+        }
+      }
+      // If we scanned to end without hitting either — still open/unresolved
+      if (outcome === 'open') outcome = 'na'; // data ended before resolution
+    } else if (type === 'exit') {
+      outcome = 'na';
+    }
 
     timeline.push({
-      bar:   i,
-      date:  rows[i].dt,
-      sig,
-      type,
-      price: Math.round(rows[i].cl * 100) / 100,
-      score: sc,
-      isToday,
+      bar: i, date: rows[i].dt, sig, type,
+      price: Math.round(entryPrice * 100) / 100,
+      score: sc, isToday, outcome,
     });
 
     if (type === 'buy')  buys++;
     if (type === 'sell') sells++;
     if (type === 'exit') exits++;
 
-    // Count how many times the exact current signal type fired
     const curType = currentSig.startsWith('B') ? 'buy'
                   : currentSig.startsWith('S') ? 'sell' : 'exit';
     if (type === curType) currentSigCount++;
   }
 
-  // Reliability: current signal type fired 3+ times = reliable pattern
   const reliable = currentSigCount >= 3;
+
+  // P/L stats (only buy/sell signals)
+  const tradeable = timeline.filter(e => e.type === 'buy' || e.type === 'sell');
+  const wins  = tradeable.filter(e => e.outcome === 'win').length;
+  const losses= tradeable.filter(e => e.outcome === 'loss').length;
+  const open  = tradeable.filter(e => e.outcome === 'open').length;
+  const na    = tradeable.filter(e => e.outcome === 'na').length;
+  const resolved = wins + losses;
+  const winRate = resolved > 0 ? Math.round(wins / resolved * 100) : null;
 
   return {
     buys, sells, exits,
     total: timeline.length,
-    timeline: timeline.reverse(), // newest first for display
-    reliable,
-    currentSigCount,
+    timeline: timeline.reverse(),
+    reliable, currentSigCount,
+    plWins: wins, plLosses: losses, plOpen: open, plNa: na,
+    winRate,
   };
 }
 
@@ -3268,15 +3331,36 @@ function openHistModal(sym) {
       <div class="hist-sum-lbl">${hist.reliable ? 'Reliable' : 'New Pattern'}</div>
     </div>`;
 
-  // Timeline
+  // P/L summary bar
   const tl = document.getElementById('histTimeline');
+  const wrCls = hist.winRate === null ? '' : hist.winRate >= 60 ? 'wr-good' : hist.winRate >= 45 ? 'wr-ok' : 'wr-bad';
+  const wrTxt = hist.winRate !== null ? hist.winRate + '%' : 'N/A';
+  const plBarHtml = `
+    <div class="pl-summary-bar">
+      <span style="color:var(--text2);font-weight:600;">P/L&nbsp;(2%TP / 4%SL)</span>
+      <span class="pl-sum-win">✓ WIN: ${hist.plWins}</span>
+      <span style="color:var(--border2)">|</span>
+      <span class="pl-sum-loss">✗ LOSS: ${hist.plLosses}</span>
+      <span style="color:var(--border2)">|</span>
+      <span class="pl-sum-open">⏳ OPEN: ${hist.plOpen}</span>
+      <span style="color:var(--border2)">|</span>
+      <span class="pl-sum-wr ${wrCls}">WR: ${wrTxt}</span>
+      ${hist.winRate !== null ? `<span style="color:var(--text3);font-size:10px;">(${hist.plWins+hist.plLosses} resolved)</span>` : ''}
+    </div>`;
+
   if (!hist.timeline.length) {
-    tl.innerHTML = '<div style="font-family:var(--mono);font-size:11px;color:var(--text3);padding:8px 0;">No signals found in history</div>';
+    tl.innerHTML = plBarHtml + '<div style="font-family:var(--mono);font-size:11px;color:var(--text3);padding:8px 0;">No signals found in history</div>';
   } else {
     const SIG_COLORS = {
       buy: 'var(--bull)', sell: 'var(--bear)', exit: 'var(--exit)'
     };
-    tl.innerHTML = hist.timeline.map(e => {
+    const plBadge = (outcome) => {
+      if (outcome === 'win')  return '<span class="pl-win">✓ WIN +2%</span>';
+      if (outcome === 'loss') return '<span class="pl-loss">✗ LOSS −4%</span>';
+      if (outcome === 'open') return '<span class="pl-open">⏳ OPEN</span>';
+      return '<span class="pl-na">— N/A</span>';
+    };
+    tl.innerHTML = plBarHtml + hist.timeline.map(e => {
       const col = SIG_COLORS[e.type] || 'var(--text)';
       const dateStr = e.date instanceof Date
         ? e.date.toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'2-digit'})
@@ -3289,6 +3373,7 @@ function openHistModal(sym) {
         <span class="hist-tl-sig" style="color:${col}">${e.sig}</span>
         <span class="hist-tl-price">₹${e.price.toLocaleString('en-IN')}</span>
         <span class="hist-tl-score">Sc:${e.score}</span>
+        ${plBadge(e.outcome)}
         ${todayTag}
       </div>`;
     }).join('');
@@ -4153,7 +4238,7 @@ function renderTable(signals) {
 
   if (!signals.length) {
     tbody.innerHTML = `
-      <tr><td colspan="16">
+      <tr><td colspan="14">
         <div class="empty-state">
           <i class="fas fa-magnifying-glass"></i>
           <h3>No signals match filters</h3>
@@ -4169,7 +4254,7 @@ function renderTable(signals) {
     const tr = document.createElement('tr');
     tr.className = rowClass(s.signal);
 
-    const rr       = s.rr ? `<div class="rr-cell">R:R&nbsp;${s.rr}</div>` : '';
+    const rr       = s.rr || null;
     const hmaCross = s.hmaCrossUp
       ? `<div class="hma-cross-bull">XOVER ▲</div>`
       : s.hmaCrossDn ? `<div class="hma-cross-bear">XOVER ▼</div>` : '';
@@ -4275,9 +4360,13 @@ function renderTable(signals) {
       <td>${buildBandChart(s.bands)}</td>
       <td class="price-cell">${fmtPrice(s.price)}</td>
       <td>${gttCell}</td>
-      <td class="tp-cell">${fmtPrice(s.takeProfit)}</td>
-      <td class="sl-cell">${fmtPrice(s.stopLoss)}${rr}</td>
-      <td class="price-cell">${s.rr ? `<span style="font-size:12px;color:var(--text2)">1 : ${s.rr}</span>` : '—'}</td>`;
+      <td>
+        <div class="tpsl-cell">
+          <div class="tpsl-tp">▲ ${fmtPrice(s.takeProfit)}${s.takeProfit && s.price ? ' <span style="font-size:10px;opacity:0.75">(+2%)</span>' : ''}</div>
+          <div class="tpsl-sl">▼ ${fmtPrice(s.stopLoss)}${s.stopLoss && s.price ? ' <span style="font-size:10px;opacity:0.75">(−4%)</span>' : ''}</div>
+          ${rr ? `<div class="tpsl-rr">R:R&nbsp;1 : ${rr}</div>` : ''}
+        </div>
+      </td>`;
 
     frag.appendChild(tr);
   });
@@ -4497,7 +4586,7 @@ function clearAll() {
   const badge = document.getElementById('advDecModeBadge');
   if (badge) badge.textContent = 'ALL';
   document.getElementById('tbody').innerHTML = `
-    <tr><td colspan="16">
+    <tr><td colspan="14">
       <div class="empty-state">
         <i class="fas fa-chart-candlestick"></i>
         <h3>No data loaded</h3>
